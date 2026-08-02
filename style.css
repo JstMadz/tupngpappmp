@@ -1,45 +1,219 @@
+:root {
+  --maroon: #8c1d40;
+  --maroon-dark: #6e1631;
+  --maroon-light: #a72b52;
+  --text: #262223;
+  --border: #d8d3d4;
+  --bg: #f4f2f3;
+  --danger: #c0392b;
+  --success: #2e7d32;
+  --focus: #1a73e8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* Fluid base size: scales gently from small phones up through very large
+     interactive-board displays instead of jumping at fixed breakpoints. */
+  font-size: clamp(14px, 0.6vw + 12px, 20px);
+}
+
 body {
   font-family: "Poppins", sans-serif;
-  background-color: #f7f7f7;
-  color: #333;
+  background-color: var(--bg);
+  color: var(--text);
   margin: 0;
+  line-height: 1.5;
+  overflow-x: hidden;
 }
+
+.page-wrapper {
+  max-width: 1700px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+
+/* ---------- Header ---------- */
 
 .header {
   display: flex;
   align-items: center;
-  background-color: #8c1d40;
+  gap: 1.25rem;
+  background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-dark) 100%);
   color: #fff;
-  padding: 10px 20px;
+  padding: 1.5rem 1.75rem;
 }
 
 .logo {
-  width: 80px;
-  height: 80px;
-  margin-right: 15px;
+  width: 5rem;
+  height: 5rem;
+  flex-shrink: 0;
 }
 
-.header-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+.header-content {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
-.header-grid label {
-  background: #f0f0f0;
-  color: #000;
-  padding: 5px 8px;
-  border-radius: 5px;
+.header h1 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.header h2 {
+  margin: 0.25rem 0 0;
+  font-size: 1rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+/* ---------- Plan info panels ---------- */
+
+.plan-info-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  align-items: start;
+  gap: 1.25rem;
+  margin: 1.25rem;
+}
+
+.info-panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.5rem 1.25rem 1.5rem;
+  margin: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+  min-width: 0;
+}
+
+.info-panel > legend {
+  padding: 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--maroon-dark);
+}
+
+.info-panel.plan > legend::before {
+  content: "📋";
+  margin-right: 0.45rem;
+}
+
+.info-panel.officials > legend::before {
+  content: "🖋️";
+  margin-right: 0.45rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));
+  gap: 1rem 1.25rem;
+  margin-top: 0.85rem;
+}
+
+.info-grid .field {
   display: flex;
   flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.info-grid .field-wide {
+  grid-column: 1 / -1;
+}
+
+/* Groups an official's Name + Designation as one visual pair, always in
+   that order, instead of leaving them to fall wherever auto-fit wraps them. */
+.official-row {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-top: 0.85rem;
+}
+
+.official-row:first-child {
+  padding-top: 0;
+}
+
+.official-row + .official-row {
+  border-top: 1px dashed var(--border);
+}
+
+.official-row .field-name,
+.official-row .field-designation {
+  flex: 0 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+.field-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* Segmented control (Plan Type: Indicative / Final) */
+
+.segmented-control {
+  position: relative;
+  display: inline-flex;
+  align-self: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 3px;
+  gap: 3px;
+  background: var(--bg);
+}
+
+.segmented-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented-option {
+  padding: 0.45rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s ease, color 0.15s ease;
+  min-height: 2.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.segmented-input:checked + .segmented-option {
+  background: var(--maroon);
+  color: #fff;
+}
+
+.segmented-input:focus-visible + .segmented-option {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Forms (shared) ---------- */
+
+.required {
+  color: var(--danger);
 }
 
 .form-section,
 .table-display {
   background: #fff;
-  margin: 20px;
-  padding: 20px;
+  margin: 1.25rem;
+  padding: 1.25rem;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -47,98 +221,339 @@ body {
 .form-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 1rem;
 }
 
-.form-grid > div {
-  flex: 1 1 calc(50% - 15px);
+.form-grid > .field {
+  flex: 1 1 calc(50% - 1rem);
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-grid > .field-wide {
+  flex-basis: 100%;
+}
+
+.checkbox-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+  font-size: 0.95rem;
+  min-height: 2rem;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.others-row {
+  margin-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.others-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.others-row input[type="text"] {
+  flex: 1 1 220px;
+  width: auto;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.others-row input[type="text"]:disabled {
+  background: #f4f2f3;
+  color: #999;
+}
+
+.field label {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.info-grid .field label,
+.info-grid .field-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #767070;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 input,
 select {
-  padding: 8px;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem 0.65rem;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 1rem;
+  min-height: 2.75rem;
+  background: #fff;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+  border-color: var(--focus);
+}
+
+input.invalid,
+select.invalid {
+  border-color: var(--danger);
+  background: #fff6f5;
+}
+
+input.invalid:focus,
+select.invalid:focus {
+  outline-color: var(--danger);
+}
+
+.error-message {
+  display: block;
+  min-height: 1.1em;
+  color: var(--danger);
+  font-size: 0.8rem;
 }
 
 button {
-  background: #8c1d40;
+  background: var(--maroon);
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 10px 20px;
-  margin: 5px;
+  padding: 0.7rem 1.2rem;
+  margin: 0.3rem;
   cursor: pointer;
   transition: background 0.2s;
+  font-family: inherit;
+  font-size: 0.95rem;
+  min-height: 2.75rem;
 }
 
 button:hover {
-  background: #a72b52;
+  background: var(--maroon-light);
 }
 
-/* Style for Edit and Delete buttons inside the project table */
-#ppmpTable button {
-  font-size: 14px;
-  padding: 4px 8px;
-  margin: 2px;
-  border-radius: 4px;
+button:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
-/* Edit button color */
-#ppmpTable button:first-child {
-  background-color: #3498db; /* blue */
-  color: white;
-}
-#ppmpTable button:first-child:hover {
-  background-color: #2980b9;
+.danger-btn {
+  background: #6b6b6b;
 }
 
-/* Delete button color */
-#ppmpTable button:last-child {
-  background-color: #e74c3c; /* red */
-  color: white;
+.danger-btn:hover {
+  background: var(--danger);
 }
-#ppmpTable button:last-child:hover {
-  background-color: #c0392b;
+
+.button-group {
+  margin-top: 0.5rem;
+}
+
+.import-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: #767070;
+}
+
+/* ---------- Table ---------- */
+
+.table-container {
+  overflow-x: auto;
+  max-height: 65vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 0;
+  min-width: 1100px;
 }
+
 th,
 td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--border);
   text-align: center;
-  padding: 8px;
+  padding: 0.55rem;
+  font-size: 0.9rem;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--maroon);
+  color: #fff;
+  z-index: 1;
+}
+
+td.budget-cell {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody tr:nth-child(even) {
+  background: #faf8f8;
+}
+
+tbody tr:hover {
+  background: #f1e7ea;
+}
+
+.empty-row td {
+  padding: 1.5rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* Edit and Delete buttons inside the project table */
+#ppmpTable button {
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  margin: 0.15rem;
+  border-radius: 4px;
+  min-height: 2.2rem;
+}
+
+#ppmpTable button.edit-btn {
+  background-color: #3498db;
+  color: white;
+}
+#ppmpTable button.edit-btn:hover {
+  background-color: #2980b9;
+}
+
+#ppmpTable button.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+}
+#ppmpTable button.delete-btn:hover {
+  background-color: #c0392b;
 }
 
 .total-container {
   text-align: right;
-  margin-top: 10px;
+  margin-top: 0.75rem;
   font-weight: 600;
+  font-size: 1.05rem;
 }
+
+/* ---------- Signatures / footer ---------- */
 
 .signature-container {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   text-align: center;
-  margin: 40px 20px;
+  margin: 2.5rem 1.25rem;
+  gap: 1rem;
+}
+
+.signature-block {
+  flex: 1 1 220px;
+}
+
+.signature-line {
+  margin-bottom: 0.2rem;
+}
+
+.signature-name {
+  font-weight: 600;
+  margin: 0;
+}
+
+.signature-designation {
+  margin: 0.1rem 0 0.6rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.signature-date {
+  font-size: 0.85rem;
+  color: #555;
 }
 
 footer {
   text-align: right;
-  font-size: 12px;
-  margin: 20px;
+  font-size: 0.8rem;
+  margin: 1.25rem;
+  color: #666;
 }
+
+/* ---------- Toasts ---------- */
+
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 1000;
+}
+
+.toast {
+  min-width: 220px;
+  max-width: 360px;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: toast-in 0.2s ease-out;
+}
+
+.toast.success {
+  background: var(--success);
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+.toast.info {
+  background: #37474f;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ---------- Print ---------- */
 
 @media print {
   body {
     font-family: "Poppins", sans-serif;
   }
+  .toast-container,
+  .plan-info-section,
   .form-section,
   .button-group {
     display: none;
@@ -152,49 +567,61 @@ footer {
   }
 }
 
-/* ✅ Responsive adjustments */
+/* ---------- Responsive adjustments ---------- */
+
 @media (max-width: 1024px) {
-  .header,
-  .form-grid,
-  .header-grid {
+  .header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    text-align: center;
   }
-  .header-grid label {
-    width: 100%;
-  }
-  .form-grid > div {
+  .form-grid > .field {
     flex: 1 1 100%;
   }
   button {
     width: 100%;
-    margin-top: 8px;
+    margin: 0.3rem 0;
   }
 }
 
 @media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
-  .logo {
-    width: 60px;
-    height: 60px;
-  }
-  .header h1,
-  .header h2 {
-    font-size: 1rem;
-  }
-  .header-grid label {
-    font-size: 0.9rem;
-  }
   .form-section,
   .table-display {
-    margin: 10px;
-    padding: 15px;
+    margin: 0.65rem;
+    padding: 1rem;
   }
-  th,
-  td {
-    font-size: 0.85rem;
-    padding: 4px;
+  .signature-container {
+    margin: 1.5rem 0.65rem;
+  }
+}
+
+/* Large interactive displays (65"-90" boards). These panels are touched
+   directly, so buttons/inputs stay generously sized and text scales up
+   further for at-a-distance legibility rather than stretching thin. */
+@media (min-width: 1800px) {
+  html {
+    font-size: 20px;
+  }
+  button,
+  input,
+  select {
+    min-height: 3.25rem;
+  }
+  #ppmpTable button {
+    min-height: 2.6rem;
+  }
+}
+
+@media (min-width: 2600px) {
+  html {
+    font-size: 24px;
+  }
+  .page-wrapper {
+    max-width: 2200px;
+  }
+  button,
+  input,
+  select {
+    min-height: 3.75rem;
   }
 }
