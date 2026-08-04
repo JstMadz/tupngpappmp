@@ -236,9 +236,9 @@ h3 {
 }
 
 .checkbox-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.2rem 0.75rem;
   padding: 0.6rem 0.75rem;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -247,21 +247,37 @@ h3 {
 
 .checkbox-item {
   display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  align-items: flex-start;
+  gap: 0.35rem;
   font-weight: 400;
   font-size: 0.95rem;
-  min-height: 2rem;
-  white-space: nowrap;
-  flex: 0 0 auto;
+  min-height: 1.6rem;
+  white-space: normal;
+  min-width: 0;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  min-height: 0;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.checkbox-item > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .others-row {
   margin-top: 0.6rem;
+  align-items: center;
   flex-wrap: wrap;
 }
 
-.others-toggle {
+.others-row .others-toggle {
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -575,6 +591,12 @@ footer {
     align-items: stretch;
     text-align: center;
   }
+}
+
+/* Phones and narrow tablets: the two-column form/button layout no longer
+   has room to breathe, so collapse to a single column. Tablets and small
+   laptops (768-1024px) keep the two-column layout used at desktop widths. */
+@media (max-width: 680px) {
   .form-grid > .field {
     flex: 1 1 100%;
   }
@@ -589,6 +611,9 @@ footer {
   .table-display {
     margin: 0.65rem;
     padding: 1rem;
+  }
+  .checkbox-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   .signature-container {
     margin: 1.5rem 0.65rem;
