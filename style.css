@@ -52,8 +52,8 @@ h3 {
 }
 
 .logo {
-  width: 5rem;
-  height: 5rem;
+  width: clamp(3rem, 4vw + 2rem, 5rem);
+  height: clamp(3rem, 4vw + 2rem, 5rem);
   flex-shrink: 0;
 }
 
@@ -64,14 +64,16 @@ h3 {
 
 .header h1 {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: clamp(1rem, 1.6vw + 0.6rem, 1.35rem);
+  overflow-wrap: break-word;
 }
 
 .header h2 {
   margin: 0.25rem 0 0;
-  font-size: 1rem;
+  font-size: clamp(0.8rem, 0.8vw + 0.6rem, 1rem);
   font-weight: 400;
   opacity: 0.9;
+  overflow-wrap: break-word;
 }
 
 /* ---------- Plan info panels ---------- */
@@ -585,11 +587,18 @@ footer {
 
 /* ---------- Responsive adjustments ---------- */
 
-@media (max-width: 1024px) {
+@media (max-width: 660px) {
   .header {
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 1.1rem 1rem;
+    gap: 0.75rem;
   }
 }
 
