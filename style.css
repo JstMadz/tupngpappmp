@@ -722,7 +722,7 @@ footer {
   }
 }
 
-/* ---------- Date picker (flatpickr, modal-style) ---------- */
+/* ---------- Date picker (Air Datepicker, modal-style) ---------- */
 
 .month-picker {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238c1d40' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='3'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");
@@ -733,147 +733,71 @@ footer {
   cursor: pointer;
 }
 
-/* Dim backdrop shown behind the calendar while it's open, giving it a
-   true modal presence instead of a small anchored popover. */
-.date-picker-backdrop {
-  z-index: 99990;
-}
-
-.flatpickr-calendar {
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translate(-50%, -50%) !important;
-  font-family: "Poppins", sans-serif;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
+/* Air Datepicker themes almost entirely through CSS custom properties
+   (--adp-*), so we re-theme it here instead of overriding individual
+   selectors — no specificity fights with the library's own stylesheet. */
+.air-datepicker {
+  --adp-font-family: "Poppins", sans-serif;
+  --adp-width: 300px;
+  --adp-z-index: 1200;
+  --adp-border-radius: 14px;
+  --adp-border-color: var(--border);
+  --adp-background-color-hover: var(--bg);
+  --adp-background-color-active: #ece5e7;
+  --adp-day-name-color: var(--maroon);
+  --adp-day-name-color-hover: var(--maroon-dark);
+  --adp-color-current-date: var(--maroon);
+  --adp-accent-color: var(--maroon);
+  --adp-cell-background-color-selected: var(--maroon);
+  --adp-cell-background-color-selected-hover: var(--maroon-dark);
+  --adp-cell-background-color-in-range: rgba(140, 29, 64, 0.08);
+  --adp-cell-background-color-in-range-hover: rgba(140, 29, 64, 0.16);
+  --adp-cell-border-color-in-range: var(--maroon);
+  --adp-cell-border-radius: 8px;
+  --adp-day-cell-height: 38px;
+  --adp-nav-arrow-color: var(--maroon);
+  --adp-nav-color-secondary: #9c9c9c;
+  --adp-btn-color: var(--maroon);
+  --adp-btn-color-hover: var(--maroon-dark);
+  --adp-btn-background-color-hover: var(--bg);
+  --adp-btn-background-color-active: #ece5e7;
+  --adp-mobile-width: 320px;
+  --adp-mobile-day-cell-height: 42px;
   box-shadow:
-    0 24px 60px rgba(0, 0, 0, 0.28),
+    0 24px 60px rgba(0, 0, 0, 0.24),
     0 4px 14px rgba(0, 0, 0, 0.1);
-  padding: 1rem 1.1rem 1.15rem;
-  font-size: 15px;
 }
 
-.flatpickr-calendar.open {
-  animation: date-picker-pop-in 0.18s ease-out;
+.air-datepicker-overlay {
+  --adp-overlay-background-color: rgba(20, 8, 14, 0.55);
+  --adp-overlay-z-index: 1190;
 }
 
-.flatpickr-calendar.arrowTop:before,
-.flatpickr-calendar.arrowTop:after,
-.flatpickr-calendar.arrowBottom:before,
-.flatpickr-calendar.arrowBottom:after {
-  display: none;
-}
-
-@keyframes date-picker-pop-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.94);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-}
-
-.flatpickr-months {
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-}
-
-.flatpickr-current-month {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.flatpickr-current-month .flatpickr-monthDropdown-months,
-.flatpickr-current-month input.cur-year {
-  font-weight: 600;
-  font-size: 1rem;
-  color: var(--text);
-}
-
-.flatpickr-current-month .numInputWrapper {
-  width: 5.2rem;
-}
-
-.flatpickr-months .flatpickr-prev-month,
-.flatpickr-months .flatpickr-next-month {
-  border-radius: 8px;
-  color: var(--maroon);
-  fill: var(--maroon);
-  transition: background 0.15s ease;
-}
-
-.flatpickr-months .flatpickr-prev-month:hover,
-.flatpickr-months .flatpickr-next-month:hover {
-  background: var(--bg);
-  color: var(--maroon-dark);
-}
-
-.flatpickr-months .flatpickr-prev-month:hover svg,
-.flatpickr-months .flatpickr-next-month:hover svg {
-  fill: var(--maroon-dark);
-}
-
-.flatpickr-weekdays {
-  margin-bottom: 0.2rem;
-}
-
-.flatpickr-weekday {
-  font-weight: 600;
-  font-size: 0.72rem;
-  color: #767070;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.flatpickr-day {
-  border-radius: 10px;
-  font-weight: 500;
-  color: var(--text);
-  transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    transform 0.1s ease;
-}
-
-.flatpickr-day:hover,
-.flatpickr-day:focus {
-  background: var(--bg);
-  border-color: var(--bg);
-  color: var(--maroon-dark);
-  outline: none;
-}
-
-.flatpickr-day.today {
-  border-color: var(--maroon-light);
-}
-
-.flatpickr-day.today:hover,
-.flatpickr-day.today:focus {
-  background: var(--maroon-light);
-  border-color: var(--maroon-light);
-  color: #fff;
-}
-
-.flatpickr-day.selected,
-.flatpickr-day.selected:hover,
-.flatpickr-day.selected:focus {
+/* Selected day gets the same brand gradient used elsewhere in the app
+   (buttons, footer badge, confirm modal) instead of a flat fill. */
+.air-datepicker-cell.-selected- {
   background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-light) 100%);
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 4px 10px rgba(140, 29, 64, 0.35);
-  transform: scale(1.05);
 }
 
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
-  color: rgba(38, 34, 35, 0.3);
+.air-datepicker-cell.-current-.-focus- {
+  color: var(--adp-color);
+}
+
+/* Prev/next arrows flank the title (default markup already places them
+   on either side); making the title flex-grow keeps it perfectly centered
+   between the two fixed-position arrows no matter how long the month
+   name is, so nothing shifts when navigating months. */
+.air-datepicker-nav {
+  padding: 0.6rem 0.5rem;
+}
+
+.air-datepicker-nav--title {
+  flex: 1;
+  font-weight: 600;
+}
+
+.air-datepicker-nav--title i {
+  font-style: normal;
 }
 
 /* ---------- Print ---------- */
