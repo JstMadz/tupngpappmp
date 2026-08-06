@@ -638,6 +638,90 @@ footer {
   }
 }
 
+/* ---------- Confirm modal ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+  animation: modal-fade-in 0.15s ease-out;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal-box {
+  background: #fff;
+  color: var(--text);
+  border-radius: 10px;
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  animation: modal-pop-in 0.15s ease-out;
+}
+
+.modal-box p {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.modal-btn {
+  margin: 0;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
+  min-height: 2.5rem;
+}
+
+.modal-btn-cancel {
+  background: #6b6b6b;
+}
+
+.modal-btn-cancel:hover {
+  background: #555;
+}
+
+.modal-btn-ok {
+  background: var(--danger);
+}
+
+.modal-btn-ok:hover {
+  background: #a5311f;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop-in {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* ---------- Print ---------- */
 
 @media print {

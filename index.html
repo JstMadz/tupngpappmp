@@ -24,6 +24,25 @@
       aria-atomic="true"
     ></div>
 
+    <div id="confirmModal" class="modal-overlay" hidden>
+      <div
+        class="modal-box"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirmModalMessage"
+      >
+        <p id="confirmModalMessage"></p>
+        <div class="modal-actions">
+          <button type="button" id="confirmModalCancel" class="modal-btn modal-btn-cancel">
+            Cancel
+          </button>
+          <button type="button" id="confirmModalOk" class="modal-btn modal-btn-ok">
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="page-wrapper">
       <header class="header">
         <img src="assets/tup_logo.png" alt="TUP Manila Logo" class="logo" />

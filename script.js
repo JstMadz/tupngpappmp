@@ -490,6 +490,46 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => toast.remove(), 3500);
   }
 
+  // ---------- Confirm modal (replaces window.confirm) ----------
+
+  const confirmModal = document.getElementById("confirmModal");
+  const confirmModalMessage = document.getElementById("confirmModalMessage");
+  const confirmModalOk = document.getElementById("confirmModalOk");
+  const confirmModalCancel = document.getElementById("confirmModalCancel");
+  let confirmModalResolve = null;
+  let confirmModalTrigger = null;
+
+  function closeConfirmModal(result) {
+    confirmModal.hidden = true;
+    document.removeEventListener("keydown", handleConfirmModalKeydown);
+    if (confirmModalTrigger) confirmModalTrigger.focus();
+    if (confirmModalResolve) {
+      confirmModalResolve(result);
+      confirmModalResolve = null;
+    }
+  }
+
+  function handleConfirmModalKeydown(e) {
+    if (e.key === "Escape") closeConfirmModal(false);
+  }
+
+  function showConfirm(message) {
+    confirmModalMessage.textContent = message;
+    confirmModalTrigger = document.activeElement;
+    confirmModal.hidden = false;
+    confirmModalOk.focus();
+    document.addEventListener("keydown", handleConfirmModalKeydown);
+    return new Promise((resolve) => {
+      confirmModalResolve = resolve;
+    });
+  }
+
+  confirmModalOk.addEventListener("click", () => closeConfirmModal(true));
+  confirmModalCancel.addEventListener("click", () => closeConfirmModal(false));
+  confirmModal.addEventListener("click", (e) => {
+    if (e.target === confirmModal) closeConfirmModal(false);
+  });
+
   // ---------- Field-level error display ----------
 
   function setFieldError(id, message) {
@@ -801,19 +841,22 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("description").focus();
   }
 
-  function deleteProject(index) {
-    if (confirm("Are you sure you want to delete this project?")) {
-      projects.splice(index, 1);
-      if (editIndex === index) {
-        editIndex = null;
-        addBtn.textContent = "➕ Add Project";
-        document.getElementById("projectForm").reset();
-        setSelectedDocs("");
-      }
-      renderTable();
-      saveState();
-      showToast("Project deleted.", "info");
+  async function deleteProject(index) {
+    const confirmed = await showConfirm(
+      "Are you sure you want to delete this project?",
+    );
+    if (!confirmed) return;
+
+    projects.splice(index, 1);
+    if (editIndex === index) {
+      editIndex = null;
+      addBtn.textContent = "➕ Add Project";
+      document.getElementById("projectForm").reset();
+      setSelectedDocs("");
     }
+    renderTable();
+    saveState();
+    showToast("Project deleted.", "info");
   }
 
   // ---------- Add / Update project ----------
@@ -844,13 +887,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- Clear saved data ----------
 
-  document.getElementById("clearData").addEventListener("click", () => {
-    if (
-      !confirm(
-        "This will permanently delete all saved PPMP data from this browser. Continue?",
-      )
-    )
-      return;
+  document.getElementById("clearData").addEventListener("click", async () => {
+    const confirmed = await showConfirm(
+      "This will permanently delete all saved PPMP data from this browser. Continue?",
+    );
+    if (!confirmed) return;
 
     localStorage.removeItem(STORAGE_KEY);
     projects.length = 0;
@@ -945,7 +986,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (projects.length > 0) {
-        const confirmed = confirm(
+        const confirmed = await showConfirm(
           `Importing will replace the current ${projects.length} project(s) with ${result.projects.length} imported project(s). Continue?`,
         );
         if (!confirmed) return;
