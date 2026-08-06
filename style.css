@@ -518,6 +518,64 @@ footer {
   color: #666;
 }
 
+.site-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  text-align: left;
+}
+
+.footer-credit {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.footer-credit strong {
+  color: var(--maroon-dark);
+}
+
+.visitor-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.visitor-count {
+  display: inline-block;
+  min-width: 2.5ch;
+  padding: 0.15rem 0.6rem;
+  background: linear-gradient(135deg, var(--maroon) 0%, var(--maroon-light) 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.visitor-count.is-counting {
+  animation: visitor-count-pop 0.25s ease;
+}
+
+@keyframes visitor-count-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* ---------- Toasts ---------- */
 
 .toast-container {
@@ -573,7 +631,8 @@ footer {
   .toast-container,
   .plan-info-section,
   .form-section,
-  .button-group {
+  .button-group,
+  .site-footer {
     display: none;
   }
   .header {

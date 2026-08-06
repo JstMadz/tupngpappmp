@@ -1139,6 +1139,47 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast("Preparing print preview...", "info");
   };
 
+  // ---------- Visitor counter ----------
+
+  function animateVisitorCount(target) {
+    const el = document.getElementById("visitorCount");
+    if (!el) return;
+    const start = 0;
+    const duration = 1200;
+    const startTime = performance.now();
+
+    function step(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.round(start + (target - start) * eased);
+      el.textContent = value.toLocaleString();
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = target.toLocaleString();
+        el.classList.add("is-counting");
+        setTimeout(() => el.classList.remove("is-counting"), 250);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function trackVisitorLocally() {
+    const count = (parseInt(localStorage.getItem("ppmpVisitorCount"), 10) || 0) + 1;
+    localStorage.setItem("ppmpVisitorCount", String(count));
+    animateVisitorCount(count);
+  }
+
+  function initVisitorCounter() {
+    fetch("https://api.countapi.xyz/hit/tup-manila-ppmp/site-visits")
+      .then((res) => {
+        if (!res.ok) throw new Error("CountAPI request failed");
+        return res.json();
+      })
+      .then((data) => animateVisitorCount(data.value))
+      .catch(() => trackVisitorLocally());
+  }
+
   // ---------- Init ----------
 
   loadState();
@@ -1146,4 +1187,5 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("fiscalYear").value = nextYear;
   }
   renderTable();
+  initVisitorCounter();
 });
