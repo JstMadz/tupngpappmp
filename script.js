@@ -51,7 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const cleaned = el.value.replace(/[^\d.]/g, "");
     const firstDot = cleaned.indexOf(".");
     let intPart = firstDot === -1 ? cleaned : cleaned.slice(0, firstDot);
-    let decPart = firstDot === -1 ? undefined : cleaned.slice(firstDot + 1, firstDot + 3);
+    let decPart =
+      firstDot === -1 ? undefined : cleaned.slice(firstDot + 1, firstDot + 3);
     intPart = intPart.replace(/^0+(?=\d)/, "");
     const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     el.value = decPart !== undefined ? `${grouped}.${decPart}` : grouped;
@@ -78,8 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Format: TUPM-AAA(Office Code)-BBB(Type of Transaction)-CCC(Initial of employee)
   // -MMDDYYYY(month day year)-HHMMAM/PM(hour:minutes AM/PM)
   function generateTransactionId() {
-    const unitVal = document.getElementById("unit").value;
-    const code = getInitials(unitVal) || "NA";
+    const officeVal = document.getElementById("office").value;
+    const officeCode = getInitials(officeVal) || "NA";
+    const employeeVal = document.getElementById("unit").value;
+    const employeeCode = getInitials(employeeVal) || "NA";
     const now = new Date();
     const mm = String(now.getMonth() + 1).padStart(2, "0");
     const dd = String(now.getDate()).padStart(2, "0");
@@ -89,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     hours = hours % 12 || 12;
     const hh = String(hours).padStart(2, "0");
     const min = String(now.getMinutes()).padStart(2, "0");
-    return `TUPM-${code}-PPMP-${code}-${mm}${dd}${yyyy}-${hh}${min}${ampm}`;
+    return `TUPM-${officeCode}-PPMP-${employeeCode}-${mm}${dd}${yyyy}-${hh}${min}${ampm}`;
   }
 
   function uppercaseLive(e) {
@@ -138,7 +141,9 @@ document.addEventListener("DOMContentLoaded", () => {
   function populateSupportingDocs(options) {
     const group = document.getElementById("docsCheckboxGroup");
     const checkedValues = new Set(
-      Array.from(group.querySelectorAll(".docs-checkbox:checked")).map((el) => el.value)
+      Array.from(group.querySelectorAll(".docs-checkbox:checked")).map(
+        (el) => el.value,
+      ),
     );
     group.innerHTML = "";
     options.forEach((label) => {
@@ -162,22 +167,31 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("data/form-options.json");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (Array.isArray(data.headDesignations) && data.headDesignations.length) {
+      if (
+        Array.isArray(data.headDesignations) &&
+        data.headDesignations.length
+      ) {
         populateHeadDesignations(data.headDesignations);
       }
-      if (Array.isArray(data.supportingDocuments) && data.supportingDocuments.length) {
+      if (
+        Array.isArray(data.supportingDocuments) &&
+        data.supportingDocuments.length
+      ) {
         populateSupportingDocs(data.supportingDocuments);
       }
     } catch (e) {
-      console.warn("Using built-in default designations/supporting documents.", e);
+      console.warn(
+        "Using built-in default designations/supporting documents.",
+        e,
+      );
     }
   }
   loadFormOptions();
 
   function getSelectedDocs() {
-    const checked = Array.from(document.querySelectorAll(".docs-checkbox:checked")).map(
-      (el) => el.value
-    );
+    const checked = Array.from(
+      document.querySelectorAll(".docs-checkbox:checked"),
+    ).map((el) => el.value);
     const othersChecked = document.getElementById("docsOthersCheck").checked;
     const othersText = document.getElementById("docsOthersText").value.trim();
     if (othersChecked && othersText) {
@@ -187,7 +201,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setSelectedDocs(docsString) {
-    document.querySelectorAll(".docs-checkbox").forEach((cb) => (cb.checked = false));
+    document
+      .querySelectorAll(".docs-checkbox")
+      .forEach((cb) => (cb.checked = false));
     const othersCheck = document.getElementById("docsOthersCheck");
     const othersText = document.getElementById("docsOthersText");
     othersCheck.checked = false;
@@ -199,7 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .map((s) => s.trim())
       .filter(Boolean);
 
-    const knownCheckboxes = Array.from(document.querySelectorAll(".docs-checkbox"));
+    const knownCheckboxes = Array.from(
+      document.querySelectorAll(".docs-checkbox"),
+    );
     const leftover = [];
 
     segments.forEach((segment) => {
@@ -209,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
       const match = knownCheckboxes.find(
-        (cb) => cb.value.toUpperCase() === segment.toUpperCase()
+        (cb) => cb.value.toUpperCase() === segment.toUpperCase(),
       );
       if (match) match.checked = true;
       else leftover.push(segment);
@@ -333,9 +351,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function buildProjectFromRow(rowObj) {
     return {
-      description: String(rowObj.description || "").trim().toUpperCase(),
+      description: String(rowObj.description || "")
+        .trim()
+        .toUpperCase(),
       type: String(rowObj.type || "Goods").trim(),
-      quantity: String(rowObj.quantity || "").trim().toUpperCase(),
+      quantity: String(rowObj.quantity || "")
+        .trim()
+        .toUpperCase(),
       mode: String(rowObj.mode || "Competitive Bidding").trim(),
       preProc: String(rowObj.preProc || "Yes").trim(),
       start: String(rowObj.start || "").trim(),
@@ -343,8 +365,12 @@ document.addEventListener("DOMContentLoaded", () => {
       implementation: String(rowObj.implementation || "").trim(),
       source: String(rowObj.source || "GAA - Current / Continuing").trim(),
       budget: parseCurrency(rowObj.budget),
-      docs: String(rowObj.docs || "").trim().toUpperCase(),
-      remarks: String(rowObj.remarks || "").trim().toUpperCase(),
+      docs: String(rowObj.docs || "")
+        .trim()
+        .toUpperCase(),
+      remarks: String(rowObj.remarks || "")
+        .trim()
+        .toUpperCase(),
     };
   }
 
@@ -398,7 +424,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    return { projects: importedProjects, header: headerValues, skipped, total: dataRows.length };
+    return {
+      projects: importedProjects,
+      header: headerValues,
+      skipped,
+      total: dataRows.length,
+    };
   }
 
   function applyImportedHeader(header) {
@@ -412,9 +443,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("unit").value = header.unit.toUpperCase();
       validateRequiredText("unit", "End-User / Implementing Unit", 1);
     }
-    if (header.office) document.getElementById("office").value = header.office.toUpperCase();
+    if (header.office)
+      document.getElementById("office").value = header.office.toUpperCase();
     if (header.unitDesignation) {
-      document.getElementById("unitDesignation").value = header.unitDesignation.toUpperCase();
+      document.getElementById("unitDesignation").value =
+        header.unitDesignation.toUpperCase();
     }
     if (header.ppmpNo) document.getElementById("ppmpNo").value = header.ppmpNo;
     if (header.headUnit) {
@@ -422,12 +455,15 @@ document.addEventListener("DOMContentLoaded", () => {
       validateRequiredText("headUnit", "Head of Implementing Unit / Sector", 1);
     }
     if (header.headDesignation) {
-      document.getElementById("headDesignation").value = header.headDesignation.toUpperCase();
+      document.getElementById("headDesignation").value =
+        header.headDesignation.toUpperCase();
     }
     if (header.planType) {
       const normalized = header.planType.trim().toLowerCase();
-      if (normalized === "final") document.getElementById("final").checked = true;
-      else if (normalized === "indicative") document.getElementById("indicative").checked = true;
+      if (normalized === "final")
+        document.getElementById("final").checked = true;
+      else if (normalized === "indicative")
+        document.getElementById("indicative").checked = true;
     }
   }
 
@@ -538,14 +574,22 @@ document.addEventListener("DOMContentLoaded", () => {
     return true;
   }
 
-  document.getElementById("description").addEventListener("blur", () =>
-    validateRequiredText("description", "Description", 3)
-  );
-  document.getElementById("quantity").addEventListener("blur", () =>
-    validateRequiredText("quantity", "Quantity / Size", 1)
-  );
-  document.getElementById("budget").addEventListener("blur", validateBudgetField);
-  document.getElementById("budget").addEventListener("input", formatCurrencyLive);
+  document
+    .getElementById("description")
+    .addEventListener("blur", () =>
+      validateRequiredText("description", "Description", 3),
+    );
+  document
+    .getElementById("quantity")
+    .addEventListener("blur", () =>
+      validateRequiredText("quantity", "Quantity / Size", 1),
+    );
+  document
+    .getElementById("budget")
+    .addEventListener("blur", validateBudgetField);
+  document
+    .getElementById("budget")
+    .addEventListener("input", formatCurrencyLive);
   document.getElementById("startDate").addEventListener("blur", () => {
     validateDateField("startDate", "Start date");
     validateDateOrder();
@@ -554,16 +598,24 @@ document.addEventListener("DOMContentLoaded", () => {
     validateDateField("endDate", "End date");
     validateDateOrder();
   });
-  document.getElementById("implementation").addEventListener("blur", () =>
-    validateDateField("implementation", "Implementation period")
-  );
-  document.getElementById("fiscalYear").addEventListener("blur", validateFiscalYear);
-  document.getElementById("unit").addEventListener("blur", () =>
-    validateRequiredText("unit", "End-User / Implementing Unit", 1)
-  );
-  document.getElementById("headUnit").addEventListener("blur", () =>
-    validateRequiredText("headUnit", "Head of Implementing Unit / Sector", 1)
-  );
+  document
+    .getElementById("implementation")
+    .addEventListener("blur", () =>
+      validateDateField("implementation", "Implementation period"),
+    );
+  document
+    .getElementById("fiscalYear")
+    .addEventListener("blur", validateFiscalYear);
+  document
+    .getElementById("unit")
+    .addEventListener("blur", () =>
+      validateRequiredText("unit", "End-User / Implementing Unit", 1),
+    );
+  document
+    .getElementById("headUnit")
+    .addEventListener("blur", () =>
+      validateRequiredText("headUnit", "Head of Implementing Unit / Sector", 1),
+    );
 
   function validateProjectForm() {
     const checks = [
@@ -578,7 +630,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const valid = checks.every(Boolean) && dateOrderOk;
 
     const data = {
-      description: document.getElementById("description").value.trim().toUpperCase(),
+      description: document
+        .getElementById("description")
+        .value.trim()
+        .toUpperCase(),
       type: document.getElementById("type").value,
       quantity: document.getElementById("quantity").value.trim().toUpperCase(),
       mode: document.getElementById("mode").value,
@@ -612,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     const valid = checks.every(Boolean);
     const firstInvalid = ["fiscalYear", "unit", "headUnit"].find((id) =>
-      document.getElementById(id).classList.contains("invalid")
+      document.getElementById(id).classList.contains("invalid"),
     );
     return { valid, firstInvalid };
   }
@@ -646,7 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ header: getHeaderState(), projects })
+        JSON.stringify({ header: getHeaderState(), projects }),
       );
     } catch (e) {
       console.warn("Unable to save PPMP data locally.", e);
@@ -792,7 +847,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("clearData").addEventListener("click", () => {
     if (
       !confirm(
-        "This will permanently delete all saved PPMP data from this browser. Continue?"
+        "This will permanently delete all saved PPMP data from this browser. Continue?",
       )
     )
       return;
@@ -842,7 +897,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------- Import CSV / TSV / Excel ----------
 
   const importFileInput = document.getElementById("importFile");
-  document.getElementById("importFileBtn").addEventListener("click", () => importFileInput.click());
+  document
+    .getElementById("importFileBtn")
+    .addEventListener("click", () => importFileInput.click());
 
   importFileInput.addEventListener("change", async () => {
     const file = importFileInput.files[0];
@@ -856,7 +913,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const buffer = await file.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: "array" });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", raw: false });
+        rows = XLSX.utils.sheet_to_json(sheet, {
+          header: 1,
+          defval: "",
+          raw: false,
+        });
       } else {
         const text = await file.text();
         let delimiter = name.endsWith(".tsv") ? "\t" : ",";
@@ -878,14 +939,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result.projects.length === 0) {
         showToast(
           "No valid rows found. Check Description, Quantity, Budget, and dates (MM/YYYY).",
-          "error"
+          "error",
         );
         return;
       }
 
       if (projects.length > 0) {
         const confirmed = confirm(
-          `Importing will replace the current ${projects.length} project(s) with ${result.projects.length} imported project(s). Continue?`
+          `Importing will replace the current ${projects.length} project(s) with ${result.projects.length} imported project(s). Continue?`,
         );
         if (!confirmed) return;
       }
@@ -908,11 +969,14 @@ document.addEventListener("DOMContentLoaded", () => {
           : "";
       showToast(
         `Imported ${result.projects.length} project(s)${skippedMsg}.`,
-        result.skipped > 0 ? "info" : "success"
+        result.skipped > 0 ? "info" : "success",
       );
     } catch (err) {
       console.error(err);
-      showToast("Could not read the file. Make sure it's a valid CSV, TSV, or Excel export.", "error");
+      showToast(
+        "Could not read the file. Make sure it's a valid CSV, TSV, or Excel export.",
+        "error",
+      );
     } finally {
       importFileInput.value = "";
     }
@@ -923,7 +987,10 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("printPPMP").onclick = () => {
     const { valid, firstInvalid } = validateHeaderForm();
     if (!valid) {
-      showToast("Please complete the required plan information before printing.", "error");
+      showToast(
+        "Please complete the required plan information before printing.",
+        "error",
+      );
       if (firstInvalid) document.getElementById(firstInvalid).focus();
       return;
     }
@@ -942,17 +1009,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("headUnitDesignation").textContent =
       document.getElementById("headDesignation").value || "";
 
-    document.getElementById("footerDate").textContent = `Printed on: ${new Date().toLocaleString(
-      "en-PH",
-      { dateStyle: "long", timeStyle: "short" }
-    )}`;
+    document.getElementById("footerDate").textContent =
+      `Printed on: ${new Date().toLocaleString("en-PH", {
+        dateStyle: "long",
+        timeStyle: "short",
+      })}`;
 
     const logoUrl = new URL("assets/tup_logo.png", window.location.href).href;
     const unitName = escapeHtml(document.getElementById("unit").value || "");
-    const unitDesignationVal = escapeHtml(document.getElementById("unitDesignation").value || "");
-    const headUnitVal = escapeHtml(document.getElementById("headUnit").value || "");
-    const headDesignationVal = escapeHtml(document.getElementById("headDesignation").value || "");
-    const fiscalYearVal = escapeHtml(document.getElementById("fiscalYear").value || "");
+    const unitDesignationVal = escapeHtml(
+      document.getElementById("unitDesignation").value || "",
+    );
+    const headUnitVal = escapeHtml(
+      document.getElementById("headUnit").value || "",
+    );
+    const headDesignationVal = escapeHtml(
+      document.getElementById("headDesignation").value || "",
+    );
+    const fiscalYearVal = escapeHtml(
+      document.getElementById("fiscalYear").value || "",
+    );
     const ppmpNoVal = escapeHtml(document.getElementById("ppmpNo").value || "");
     const planType = getPlanTypeLabel();
     const transactionId = generateTransactionId();
@@ -1111,7 +1187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="sign-date">Date: ___________________</div>
               </td>
               <td>
-                Submitted by:
+                Approved by:
                 <div class="sign-line"></div>
                 <div class="sign-name">${headUnitVal || "&nbsp;"}</div>
                 <div class="sign-caption">Signature over Printed Name</div>
@@ -1165,7 +1241,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function trackVisitorLocally() {
-    const count = (parseInt(localStorage.getItem("ppmpVisitorCount"), 10) || 0) + 1;
+    const count =
+      (parseInt(localStorage.getItem("ppmpVisitorCount"), 10) || 0) + 1;
     localStorage.setItem("ppmpVisitorCount", String(count));
     animateVisitorCount(count);
   }
