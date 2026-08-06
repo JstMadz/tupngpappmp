@@ -6,7 +6,6 @@
     <title>PPMP Web App</title>
     <link rel="icon" type="image/png" href="assets/tup_logo.png" />
     <link rel="apple-touch-icon" href="assets/tup_logo.png" />
-    <link rel="stylesheet" href="style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -15,6 +14,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     />
+    <!-- style.css loads last so our theme overrides (incl. the flatpickr
+         calendar skin below) win cascade ties against the library's CSS. -->
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div
@@ -42,6 +44,8 @@
         </div>
       </div>
     </div>
+
+    <div id="datePickerBackdrop" class="modal-overlay date-picker-backdrop" hidden></div>
 
     <div class="page-wrapper">
       <header class="header">
@@ -428,7 +432,7 @@
           <p class="import-hint">
             Import accepts CSV, TSV, or a previously exported Excel file.
             Required columns: Description, Quantity, Budget,
-            Start/End/Implementation (MM/YYYY). Fiscal Year,
+            Start/End/Implementation (MM/DD/YYYY). Fiscal Year,
             End-User/Implementing Unit, Office, Designation, Plan Type, and Head
             of Implementing Unit/Sector &amp; Designation columns, if present,
             will also be applied.

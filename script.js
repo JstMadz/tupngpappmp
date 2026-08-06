@@ -13,9 +13,17 @@ document.addEventListener("DOMContentLoaded", () => {
   ];
 
   const nextYear = new Date().getFullYear() + 1;
+  const datePickerBackdrop = document.getElementById("datePickerBackdrop");
   flatpickr(".month-picker", {
-    dateFormat: "m/Y",
+    dateFormat: "m/d/Y",
     defaultDate: `01/01/${nextYear}`,
+    animate: false,
+    onOpen: () => {
+      datePickerBackdrop.hidden = false;
+    },
+    onClose: () => {
+      datePickerBackdrop.hidden = true;
+    },
   });
 
   const projects = [];
@@ -58,13 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
     el.value = decPart !== undefined ? `${grouped}.${decPart}` : grouped;
   }
 
-  function parseMonthYear(str) {
-    const match = /^(\d{1,2})\/(\d{4})$/.exec(String(str || "").trim());
+  function parseFullDate(str) {
+    const match = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(
+      String(str || "").trim(),
+    );
     if (!match) return null;
     const month = Number(match[1]);
-    const year = Number(match[2]);
-    if (month < 1 || month > 12) return null;
-    return new Date(year, month - 1, 1);
+    const day = Number(match[2]);
+    const year = Number(match[3]);
+    if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+    const date = new Date(year, month - 1, day);
+    if (date.getMonth() !== month - 1 || date.getDate() !== day) return null;
+    return date;
   }
 
   function getInitials(str) {
@@ -378,11 +391,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!p.description || p.description.length < 3) return false;
     if (!p.quantity) return false;
     if (!p.budget || p.budget <= 0) return false;
-    const s = parseMonthYear(p.start);
-    const e = parseMonthYear(p.end);
-    const impl = parseMonthYear(p.implementation);
+    const s = parseFullDate(p.start);
+    const e = parseFullDate(p.end);
+    const impl = parseFullDate(p.implementation);
     if (!s || !e || !impl) return false;
     if (e < s) return false;
+    if (impl < s) return false;
     return true;
   }
 
@@ -594,12 +608,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const startVal = document.getElementById("startDate").value.trim();
     const endVal = document.getElementById("endDate").value.trim();
     if (!startVal || !endVal) return true;
-    const s = parseMonthYear(startVal);
-    const e = parseMonthYear(endVal);
+    const s = parseFullDate(startVal);
+    const e = parseFullDate(endVal);
     if (s && e && e < s) {
       setFieldError("endDate", "End date cannot be earlier than start date.");
       return false;
     }
+    setFieldError("endDate", "");
+    return true;
+  }
+
+  function validateImplementationOrder() {
+    const startVal = document.getElementById("startDate").value.trim();
+    const implVal = document.getElementById("implementation").value.trim();
+    if (!startVal || !implVal) return true;
+    const s = parseFullDate(startVal);
+    const impl = parseFullDate(implVal);
+    if (s && impl && impl < s) {
+      setFieldError(
+        "implementation",
+        "Implementation date cannot be earlier than start date.",
+      );
+      return false;
+    }
+    setFieldError("implementation", "");
     return true;
   }
 
@@ -633,16 +665,16 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("startDate").addEventListener("blur", () => {
     validateDateField("startDate", "Start date");
     validateDateOrder();
+    validateImplementationOrder();
   });
   document.getElementById("endDate").addEventListener("blur", () => {
     validateDateField("endDate", "End date");
     validateDateOrder();
   });
-  document
-    .getElementById("implementation")
-    .addEventListener("blur", () =>
-      validateDateField("implementation", "Implementation period"),
-    );
+  document.getElementById("implementation").addEventListener("blur", () => {
+    validateDateField("implementation", "Implementation period");
+    validateImplementationOrder();
+  });
   document
     .getElementById("fiscalYear")
     .addEventListener("blur", validateFiscalYear);
@@ -667,7 +699,8 @@ document.addEventListener("DOMContentLoaded", () => {
       validateDateField("implementation", "Implementation period"),
     ];
     const dateOrderOk = validateDateOrder();
-    const valid = checks.every(Boolean) && dateOrderOk;
+    const implementationOrderOk = validateImplementationOrder();
+    const valid = checks.every(Boolean) && dateOrderOk && implementationOrderOk;
 
     const data = {
       description: document
@@ -979,7 +1012,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       if (result.projects.length === 0) {
         showToast(
-          "No valid rows found. Check Description, Quantity, Budget, and dates (MM/YYYY).",
+          "No valid rows found. Check Description, Quantity, Budget, and dates (MM/DD/YYYY).",
           "error",
         );
         return;
@@ -1183,7 +1216,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <thead>
               <tr>
                 <th colspan="5">PROCUREMENT PROJECT DETAILS</th>
-                <th colspan="3">PROJECTED TIMELINE (MM/YYYY)</th>
+                <th colspan="3">PROJECTED TIMELINE (MM/DD/YYYY)</th>
                 <th colspan="2">FUNDING DETAILS</th>
                 <th rowspan="2">ATTACHED SUPPORTING DOCUMENTS</th>
                 <th rowspan="2">REMARKS</th>
