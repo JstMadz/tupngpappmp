@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,13 +17,18 @@
     />
   </head>
   <body>
-    <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    <div
+      id="toastContainer"
+      class="toast-container"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <div class="page-wrapper">
       <header class="header">
         <img src="assets/tup_logo.png" alt="TUP Manila Logo" class="logo" />
         <div class="header-content">
-          <h1>Technological University of the Philippines - Manila</h1>
+          <h1>Technological University of the Philippines</h1>
           <h2>Project Procurement Management Plan (PPMP)</h2>
         </div>
       </header>
@@ -33,14 +38,34 @@
           <legend>Plan Information</legend>
           <div class="info-grid">
             <div class="field">
-              <label for="fiscalYear">Fiscal Year <span class="required">*</span></label>
-              <input type="number" id="fiscalYear" min="2000" max="2100" step="1" aria-required="true" />
-              <span class="error-message" id="fiscalYearError" aria-live="polite"></span>
+              <label for="fiscalYear"
+                >Fiscal Year <span class="required">*</span></label
+              >
+              <input
+                type="number"
+                id="fiscalYear"
+                min="2000"
+                max="2100"
+                step="1"
+                aria-required="true"
+              />
+              <span
+                class="error-message"
+                id="fiscalYearError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field field-wide">
-              <label for="unit">End-User / Implementing Unit <span class="required">*</span></label>
+              <label for="unit"
+                >End-User / Implementing Unit
+                <span class="required">*</span></label
+              >
               <input type="text" id="unit" aria-required="true" />
-              <span class="error-message" id="unitError" aria-live="polite"></span>
+              <span
+                class="error-message"
+                id="unitError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
               <label for="office">Office</label>
@@ -56,10 +81,28 @@
             </div>
             <div class="field">
               <span class="field-label">Plan Type</span>
-              <div class="segmented-control" role="radiogroup" aria-label="Plan Type">
-                <input type="radio" name="planType" id="indicative" value="Indicative" class="segmented-input" />
-                <label for="indicative" class="segmented-option">Indicative</label>
-                <input type="radio" name="planType" id="final" value="Final" class="segmented-input" />
+              <div
+                class="segmented-control"
+                role="radiogroup"
+                aria-label="Plan Type"
+              >
+                <input
+                  type="radio"
+                  name="planType"
+                  id="indicative"
+                  value="Indicative"
+                  class="segmented-input"
+                />
+                <label for="indicative" class="segmented-option"
+                  >Indicative</label
+                >
+                <input
+                  type="radio"
+                  name="planType"
+                  id="final"
+                  value="Final"
+                  class="segmented-input"
+                />
                 <label for="final" class="segmented-option">Final</label>
               </div>
             </div>
@@ -71,9 +114,16 @@
           <div class="info-grid">
             <div class="official-row">
               <div class="field field-name">
-                <label for="headUnit">Head of Implementing Unit / Sector <span class="required">*</span></label>
+                <label for="headUnit"
+                  >Head of Implementing Unit / Sector
+                  <span class="required">*</span></label
+                >
                 <input type="text" id="headUnit" aria-required="true" />
-                <span class="error-message" id="headUnitError" aria-live="polite"></span>
+                <span
+                  class="error-message"
+                  id="headUnitError"
+                  aria-live="polite"
+                ></span>
               </div>
               <div class="field field-designation">
                 <label for="headDesignation">Designation</label>
@@ -83,7 +133,10 @@
                   <option>VICE PRESIDENT FOR ADMIN AND FINANCE</option>
                   <option>VICE PRESIDENT FOR ACADEMIC AFFAIRS</option>
                   <option>VICE PRESIDENT FOR RESEARCH AND EXTENSION</option>
-                  <option>VICE PRESIDENT FOR PLANNING, DEVELOPMENT, AND SPECIAL CONCERNS</option>
+                  <option>
+                    VICE PRESIDENT FOR PLANNING, DEVELOPMENT, AND SPECIAL
+                    CONCERNS
+                  </option>
                 </select>
               </div>
             </div>
@@ -96,12 +149,26 @@
         <form id="projectForm" novalidate>
           <div class="form-grid">
             <div class="field">
-              <label for="description">Description <span class="required">*</span></label>
-              <input type="text" id="description" maxlength="200" aria-required="true" required />
-              <span class="error-message" id="descriptionError" aria-live="polite"></span>
+              <label for="description"
+                >Description <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="description"
+                maxlength="200"
+                aria-required="true"
+                required
+              />
+              <span
+                class="error-message"
+                id="descriptionError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
-              <label for="type">Procurement Type <span class="required">*</span></label>
+              <label for="type"
+                >Procurement Type <span class="required">*</span></label
+              >
               <select id="type" aria-required="true">
                 <option>Goods</option>
                 <option>Infrastructure</option>
@@ -109,12 +176,26 @@
               </select>
             </div>
             <div class="field">
-              <label for="quantity">Quantity / Size <span class="required">*</span></label>
-              <input type="text" id="quantity" maxlength="100" aria-required="true" required />
-              <span class="error-message" id="quantityError" aria-live="polite"></span>
+              <label for="quantity"
+                >Quantity / Size <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="quantity"
+                maxlength="100"
+                aria-required="true"
+                required
+              />
+              <span
+                class="error-message"
+                id="quantityError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
-              <label for="mode">Mode of Procurement <span class="required">*</span></label>
+              <label for="mode"
+                >Mode of Procurement <span class="required">*</span></label
+              >
               <select id="mode" aria-required="true">
                 <option>Competitive Bidding</option>
                 <option>Limited Source Bidding</option>
@@ -127,19 +208,24 @@
                 <option>Direct Sales</option>
                 <option>Negotiated Procurement</option>
                 <option>
-                  Direct Procurement for Science, Technology and Innovation (STI)
+                  Direct Procurement for Science, Technology and Innovation
+                  (STI)
                 </option>
               </select>
             </div>
             <div class="field">
-              <label for="preProc">Pre-Procurement Conf. <span class="required">*</span></label>
+              <label for="preProc"
+                >Pre-Procurement Conf. <span class="required">*</span></label
+              >
               <select id="preProc" aria-required="true">
                 <option>Yes</option>
                 <option>No</option>
               </select>
             </div>
             <div class="field">
-              <label for="startDate">Start Date <span class="required">*</span></label>
+              <label for="startDate"
+                >Start Date <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="startDate"
@@ -148,10 +234,16 @@
                 required
                 autocomplete="off"
               />
-              <span class="error-message" id="startDateError" aria-live="polite"></span>
+              <span
+                class="error-message"
+                id="startDateError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
-              <label for="endDate">End Date <span class="required">*</span></label>
+              <label for="endDate"
+                >End Date <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="endDate"
@@ -160,10 +252,16 @@
                 required
                 autocomplete="off"
               />
-              <span class="error-message" id="endDateError" aria-live="polite"></span>
+              <span
+                class="error-message"
+                id="endDateError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
-              <label for="implementation">Implementation Period <span class="required">*</span></label>
+              <label for="implementation"
+                >Implementation Period <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="implementation"
@@ -172,10 +270,16 @@
                 required
                 autocomplete="off"
               />
-              <span class="error-message" id="implementationError" aria-live="polite"></span>
+              <span
+                class="error-message"
+                id="implementationError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field">
-              <label for="source">Source of Funds <span class="required">*</span></label>
+              <label for="source"
+                >Source of Funds <span class="required">*</span></label
+              >
               <select id="source" aria-required="true">
                 <option>GAA - Current / Continuing</option>
                 <option>Corporate Operating Budget</option>
@@ -187,7 +291,9 @@
               </select>
             </div>
             <div class="field">
-              <label for="budget">Estimated Budget (₱) <span class="required">*</span></label>
+              <label for="budget"
+                >Estimated Budget (₱) <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="budget"
@@ -196,34 +302,70 @@
                 aria-required="true"
                 required
               />
-              <span class="error-message" id="budgetError" aria-live="polite"></span>
+              <span
+                class="error-message"
+                id="budgetError"
+                aria-live="polite"
+              ></span>
             </div>
             <div class="field field-wide">
               <span class="field-label">Supporting Documents</span>
               <div class="checkbox-grid" id="docsCheckboxGroup">
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="MARKET SCOPING" /> <span>MARKET SCOPING</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="MARKET SCOPING"
+                  />
+                  <span>MARKET SCOPING</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="TERMS OF REFERENCE" /> <span>TERMS OF REFERENCE</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="TERMS OF REFERENCE"
+                  />
+                  <span>TERMS OF REFERENCE</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="PURCHASE REQUEST" /> <span>PURCHASE REQUEST</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="PURCHASE REQUEST"
+                  />
+                  <span>PURCHASE REQUEST</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="BILL OF QUANTITIES" /> <span>BILL OF QUANTITIES</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="BILL OF QUANTITIES"
+                  />
+                  <span>BILL OF QUANTITIES</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="DUPA" /> <span>DUPA</span>
+                  <input type="checkbox" class="docs-checkbox" value="DUPA" />
+                  <span>DUPA</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="PROJECT PLAN/S AND DRAWING/S" /> <span>PROJECT PLAN/S AND DRAWING/S</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="PROJECT PLAN/S AND DRAWING/S"
+                  />
+                  <span>PROJECT PLAN/S AND DRAWING/S</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="CERTIFICATE OF AVAILABILITY OF FUNDS" /> <span>CERTIFICATE OF AVAILABILITY OF FUNDS</span>
+                  <input
+                    type="checkbox"
+                    class="docs-checkbox"
+                    value="CERTIFICATE OF AVAILABILITY OF FUNDS"
+                  />
+                  <span>CERTIFICATE OF AVAILABILITY OF FUNDS</span>
                 </label>
                 <label class="checkbox-item">
-                  <input type="checkbox" class="docs-checkbox" value="MOA" /> <span>MOA</span>
+                  <input type="checkbox" class="docs-checkbox" value="MOA" />
+                  <span>MOA</span>
                 </label>
               </div>
               <label class="checkbox-item others-row">
@@ -231,7 +373,12 @@
                   <input type="checkbox" id="docsOthersCheck" />
                   <span>OTHERS:</span>
                 </span>
-                <input type="text" id="docsOthersText" placeholder="Specify other document" disabled />
+                <input
+                  type="text"
+                  id="docsOthersText"
+                  placeholder="Specify other document"
+                  disabled
+                />
               </label>
             </div>
             <div class="field field-wide">
@@ -242,22 +389,30 @@
 
           <div class="button-group">
             <button type="button" id="addProject">➕ Add Project</button>
-            <button type="button" id="importFileBtn">📤 Import CSV / TSV</button>
+            <button type="button" id="importFileBtn">
+              📤 Import CSV / TSV
+            </button>
             <input
               type="file"
               id="importFile"
               accept=".csv,.tsv,.xlsx,.xls,text/csv,text/tab-separated-values"
               hidden
             />
-            <button type="button" id="exportExcel">⬇️ Export to Excel / CSV</button>
+            <button type="button" id="exportExcel">
+              ⬇️ Export to Excel / CSV
+            </button>
             <button type="button" id="printPPMP">🖨️ Print / Save as PDF</button>
-            <button type="button" id="clearData" class="danger-btn">🗑️ Clear Saved Data</button>
+            <button type="button" id="clearData" class="danger-btn">
+              🗑️ Clear Saved Data
+            </button>
           </div>
           <p class="import-hint">
-            Import accepts CSV, TSV, or a previously exported Excel file. Required columns:
-            Description, Quantity, Budget, Start/End/Implementation (MM/YYYY). Fiscal Year,
-            End-User/Implementing Unit, Office, Designation, Plan Type, and Head of Implementing
-            Unit/Sector &amp; Designation columns, if present, will also be applied.
+            Import accepts CSV, TSV, or a previously exported Excel file.
+            Required columns: Description, Quantity, Budget,
+            Start/End/Implementation (MM/YYYY). Fiscal Year,
+            End-User/Implementing Unit, Office, Designation, Plan Type, and Head
+            of Implementing Unit/Sector &amp; Designation columns, if present,
+            will also be applied.
           </p>
         </form>
       </section>
@@ -297,13 +452,17 @@
       <section class="signature-container">
         <div class="signature-block">
           <p class="signature-line">______________________________</p>
-          <p id="endUserName" class="signature-name">(End-User / Implementing Unit)</p>
+          <p id="endUserName" class="signature-name">
+            (End-User / Implementing Unit)
+          </p>
           <p id="endUserDesignation" class="signature-designation"></p>
           <p class="signature-date">Date: ______________________</p>
         </div>
         <div class="signature-block">
           <p class="signature-line">______________________________</p>
-          <p id="headUnitName" class="signature-name">(Head of Implementing Unit / Sector)</p>
+          <p id="headUnitName" class="signature-name">
+            (Head of Implementing Unit / Sector)
+          </p>
           <p id="headUnitDesignation" class="signature-designation"></p>
           <p class="signature-date">Date: ______________________</p>
         </div>
@@ -312,7 +471,14 @@
       <footer>
         <p id="footerDate"></p>
         <div class="site-footer">
-          <p class="footer-credit">Created by <strong>Madz Amador</strong></p>
+          <div class="footer-info">
+            <p class="footer-org">
+              &copy; 2026 Technological University of the Philippines - Manila
+            </p>
+            <p class="footer-office">Procurement Office</p>
+            <p class="footer-office">Project Procurement Management Plan</p>
+            <p class="footer-credit">Created by <strong>@madzmador</strong></p>
+          </div>
           <div class="visitor-counter" aria-live="polite">
             <span class="visitor-label">Visitors</span>
             <span id="visitorCount" class="visitor-count">0</span>
