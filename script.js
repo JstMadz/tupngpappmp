@@ -1571,13 +1571,25 @@ document.addEventListener("DOMContentLoaded", () => {
     animateVisitorCount(count);
   }
 
+  const SUPABASE_URL = "https://ttosgivhrncnxzjyndrk.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_zuYJNUbaIk-hlr8WkEac6Q_tKvdN0Bo";
+
   function initVisitorCounter() {
-    fetch("https://api.countapi.xyz/hit/tup-manila-ppmp/site-visits")
+    fetch(`${SUPABASE_URL}/rest/v1/rpc/increment_counter`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ counter_key: "tup-manila-ppmp-site-visits" }),
+    })
       .then((res) => {
-        if (!res.ok) throw new Error("CountAPI request failed");
+        if (!res.ok) throw new Error("Supabase request failed");
         return res.json();
       })
-      .then((data) => animateVisitorCount(data.value))
+      .then((value) => animateVisitorCount(value))
       .catch(() => trackVisitorLocally());
   }
 
