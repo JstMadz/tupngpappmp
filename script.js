@@ -1126,7 +1126,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- Print or Save as PDF (matches official TUPM-F-PRO-20-PMP template) ----------
 
-  document.getElementById("printPPMP").onclick = () => {
+  async function loadImageAsDataUrl(url, maxSize = 200) {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const bitmap = await createImageBitmap(blob);
+    const scale = Math.min(1, maxSize / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL("image/png");
+  }
+
+  document.getElementById("printPPMP").onclick = async () => {
     const { valid, firstInvalid } = validateHeaderForm();
     if (!valid) {
       showToast(
@@ -1157,204 +1170,373 @@ document.addEventListener("DOMContentLoaded", () => {
         timeStyle: "short",
       })}`;
 
-    const logoUrl = new URL("assets/tup_logo.png", window.location.href).href;
-    const unitName = escapeHtml(document.getElementById("unit").value || "");
-    const unitDesignationVal = escapeHtml(
-      document.getElementById("unitDesignation").value || "",
-    );
-    const headUnitVal = escapeHtml(
-      document.getElementById("headUnit").value || "",
-    );
-    const headDesignationVal = escapeHtml(
-      document.getElementById("headDesignation").value || "",
-    );
-    const fiscalYearVal = escapeHtml(
-      document.getElementById("fiscalYear").value || "",
-    );
-    const ppmpNoVal = escapeHtml(document.getElementById("ppmpNo").value || "");
-    const planType = getPlanTypeLabel();
-    const transactionId = generateTransactionId();
+    const printBtn = document.getElementById("printPPMP");
+    const originalLabel = printBtn.textContent;
+    printBtn.disabled = true;
+    printBtn.textContent = "Generating PDF...";
+    showToast("Generating PDF...", "info");
 
-    let total = 0;
-    const rowsHTML = projects
-      .map((p, i) => {
+    try {
+      const unitName = document.getElementById("unit").value.trim();
+      const unitDesignationVal = document
+        .getElementById("unitDesignation")
+        .value.trim();
+      const headUnitVal = document.getElementById("headUnit").value.trim();
+      const headDesignationVal = document
+        .getElementById("headDesignation")
+        .value.trim();
+      const fiscalYearVal = document.getElementById("fiscalYear").value.trim();
+      const ppmpNoVal = document.getElementById("ppmpNo").value.trim();
+      const planType = getPlanTypeLabel();
+      const transactionId = generateTransactionId();
+
+      let logoDataUrl = null;
+      try {
+        const logoUrl = new URL(
+          "assets/tup_logo.png",
+          window.location.href,
+        ).href;
+        logoDataUrl = await loadImageAsDataUrl(logoUrl);
+      } catch (e) {
+        logoDataUrl = null;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "mm",
+        format: "a4",
+      });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 8;
+      const contentWidth = pageWidth - margin * 2;
+      let y = margin;
+
+      doc.setLineWidth(0.2);
+      doc.setDrawColor(0);
+
+      // ----- Header table -----
+      const logoW = 22;
+      const metaLabelW = 32;
+      const metaValueW = 40;
+      const orgW = contentWidth - logoW - metaLabelW - metaValueW;
+      const headerRowH = 6.5;
+      const headerH = headerRowH * 4;
+
+      doc.rect(margin, y, logoW, headerH);
+      if (logoDataUrl) {
+        const imgSize = 16;
+        doc.addImage(
+          logoDataUrl,
+          "PNG",
+          margin + (logoW - imgSize) / 2,
+          y + (headerH - imgSize) / 2,
+          imgSize,
+          imgSize,
+        );
+      }
+
+      doc.rect(margin + logoW, y, orgW, headerH);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(11);
+      doc.text(
+        "TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES",
+        margin + logoW + orgW / 2,
+        y + 9,
+        { align: "center" },
+      );
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(6.5);
+      doc.text(
+        "Ayala Blvd., Ermita, Manila, 1000, Philippines | Tel No. +632-5301-3001 local 132",
+        margin + logoW + orgW / 2,
+        y + 15,
+        { align: "center" },
+      );
+      doc.text(
+        "Fax No. +632-8521-4063 | Email: procurement@tup.edu.ph | Website: www.tup.edu.ph",
+        margin + logoW + orgW / 2,
+        y + 19,
+        { align: "center" },
+      );
+
+      const metaRows = [
+        ["Index No.", "TUPM-F-PRO-20-PMP"],
+        ["Revision No.", "02"],
+        ["Date", "07/13/2026"],
+        ["Page", "1/1"],
+      ];
+      metaRows.forEach((row, i) => {
+        const rowY = y + i * headerRowH;
+        doc.rect(margin + logoW + orgW, rowY, metaLabelW, headerRowH);
+        doc.rect(
+          margin + logoW + orgW + metaLabelW,
+          rowY,
+          metaValueW,
+          headerRowH,
+        );
+        doc.setFontSize(7.5);
+        doc.setFont("helvetica", "bold");
+        doc.text(row[0], margin + logoW + orgW + 2, rowY + headerRowH / 2 + 1.3);
+        doc.setFont("helvetica", "normal");
+        doc.text(
+          row[1],
+          margin + logoW + orgW + metaLabelW + 2,
+          rowY + headerRowH / 2 + 1.3,
+        );
+      });
+
+      y += headerH;
+
+      // ----- Title bar -----
+      const titleH = 8;
+      doc.rect(margin, y, contentWidth, titleH);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(
+        "PROJECT PROCUREMENT MANAGEMENT PLAN (PPMP)",
+        pageWidth / 2,
+        y + titleH / 2 + 1.5,
+        { align: "center" },
+      );
+      y += titleH;
+
+      // ----- Topline: PPMP No + plan type checkboxes -----
+      const toplineH = 8;
+      doc.rect(margin, y, contentWidth, toplineH);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      const toplineTextY = y + toplineH / 2 + 1.3;
+      doc.text(
+        `PPMP NO. ${ppmpNoVal || "___________________"}`,
+        pageWidth / 2 - 55,
+        toplineTextY,
+        { align: "center" },
+      );
+
+      function drawCheckbox(label, checked, cx) {
+        const boxSize = 3.2;
+        const boxY = toplineTextY - boxSize + 0.5;
+        doc.rect(cx, boxY, boxSize, boxSize);
+        if (checked) {
+          doc.setFontSize(7);
+          doc.text("X", cx + boxSize / 2, boxY + boxSize - 0.5, {
+            align: "center",
+          });
+          doc.setFontSize(10);
+        }
+        doc.text(label, cx + boxSize + 1.5, toplineTextY);
+      }
+      drawCheckbox("INDICATIVE", planType === "Indicative", pageWidth / 2 + 8);
+      drawCheckbox("FINAL", planType === "Final", pageWidth / 2 + 50);
+
+      y += toplineH;
+
+      // ----- Plan meta -----
+      const metaH = 10;
+      doc.rect(margin, y, contentWidth, metaH);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9.5);
+      doc.text(`Fiscal Year: ${fiscalYearVal}`, margin + 3, y + 4.5);
+      doc.text(
+        `End-User or Implementing Unit: ${unitName}`,
+        margin + 3,
+        y + 8.5,
+      );
+      y += metaH;
+
+      // ----- Main procurement table -----
+      let total = 0;
+      const bodyRows = projects.map((p) => {
         total += p.budget;
-        return `<tr>
-          <td class="text-col">${escapeHtml(p.description)}</td>
-          <td>${escapeHtml(p.type)}</td>
-          <td class="text-col">${escapeHtml(p.quantity)}</td>
-          <td>${escapeHtml(p.mode)}</td>
-          <td>${escapeHtml(p.preProc)}</td>
-          <td>${escapeHtml(p.start)}</td>
-          <td>${escapeHtml(p.end)}</td>
-          <td>${escapeHtml(p.implementation)}</td>
-          <td>${escapeHtml(p.source)}</td>
-          <td class="num-col">${formatCurrencyDisplay(p.budget)}</td>
-          <td class="text-col">${escapeHtml(p.docs)}</td>
-          <td class="text-col">${escapeHtml(p.remarks)}</td>
-        </tr>`;
-      })
-      .join("");
+        return [
+          p.description,
+          p.type,
+          p.quantity,
+          p.mode,
+          p.preProc,
+          p.start,
+          p.end,
+          p.implementation,
+          p.source,
+          formatCurrencyDisplay(p.budget),
+          p.docs,
+          p.remarks,
+        ];
+      });
 
-    const printDoc = `<!DOCTYPE html>
-        <html><head><title>PPMP - ${unitName || "Print"}</title>
-        <meta charset="UTF-8" />
-        <style>
-          * { box-sizing: border-box; }
-          body { font-family: Arial, Helvetica, sans-serif; margin: 10mm; color:#000; font-size:9px; }
-          table { border-collapse: collapse; width:100%; }
+      const colWidths = [
+        53.4, 19.7, 25.3, 25.3, 14.1, 14.1, 14.1, 16.9, 22.5, 22.5, 30.9, 22.5,
+      ];
+      const columnStyles = {};
+      colWidths.forEach((w, i) => {
+        columnStyles[i] = { cellWidth: w };
+      });
+      columnStyles[0].halign = "left";
+      columnStyles[2].halign = "left";
+      columnStyles[9].halign = "right";
+      columnStyles[10].halign = "left";
+      columnStyles[11].halign = "left";
 
-          .header-table td { border:1px solid #000; padding:4px 8px; vertical-align:middle; }
-          .header-table .logo-cell { width:64px; text-align:center; }
-          .header-table .logo-cell img { display:block; margin:0 auto; }
-          .header-table .org-cell { text-align:center; }
-          .header-table .org-name { font-weight:700; font-size:11px; }
-          .header-table .org-address { font-size:7.5px; margin-top:2px; }
-          .header-table .meta-label { width:78px; font-weight:600; font-size:8px; }
-          .header-table .meta-value { width:110px; font-size:8px; }
+      doc.autoTable({
+        startY: y,
+        margin: { left: margin, right: margin },
+        tableWidth: contentWidth,
+        theme: "grid",
+        styles: {
+          font: "helvetica",
+          fontSize: 6.3,
+          cellPadding: 1.2,
+          halign: "center",
+          valign: "middle",
+          lineColor: [0, 0, 0],
+          lineWidth: 0.15,
+          textColor: [0, 0, 0],
+        },
+        headStyles: {
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
+          fontStyle: "bold",
+          fontSize: 6.3,
+          lineWidth: 0.15,
+        },
+        columnStyles,
+        head: [
+          [
+            { content: "PROCUREMENT PROJECT DETAILS", colSpan: 5 },
+            { content: "PROJECTED TIMELINE (MM/DD/YYYY)", colSpan: 3 },
+            { content: "FUNDING DETAILS", colSpan: 2 },
+            { content: "ATTACHED SUPPORTING DOCUMENTS", rowSpan: 2 },
+            { content: "REMARKS", rowSpan: 2 },
+          ],
+          [
+            "General Description and Objective of the Project to be Procured",
+            "Type of the Project to be Procured (Goods, Infrastructure, Consulting Services)",
+            "Quantity and Size of the Project to be Procured",
+            "Recommended Mode of Procurement",
+            "Pre-Procurement Conference, if applicable (Yes/No)",
+            "Start of Procurement Activity",
+            "End of Procurement Activity",
+            "Expected Delivery/ Implementation Period",
+            "Source of Funds",
+            "Estimated Budget / Authorized Budgetary Allocation (PhP)",
+          ],
+          [
+            "Column 1",
+            "Column 2",
+            "Column 3",
+            "Column 4",
+            "Column 5",
+            "Column 6",
+            "Column 7",
+            "Column 8",
+            "Column 9",
+            "Column 10",
+            "Column 11",
+            "Column 12",
+          ],
+        ],
+        body: bodyRows,
+        foot: [
+          [
+            {
+              content: "TOTAL BUDGET:",
+              colSpan: 9,
+              styles: { halign: "right", fontStyle: "bold" },
+            },
+            {
+              content: formatCurrencyDisplay(total),
+              styles: { halign: "right", fontStyle: "bold" },
+            },
+            { content: "", colSpan: 2 },
+          ],
+        ],
+        footStyles: {
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
+          lineWidth: 0.15,
+        },
+      });
 
-          .title-bar { text-align:center; font-weight:700; font-size:12px; border:1px solid #000; border-top:none; padding:5px; letter-spacing:0.02em; }
+      y = doc.lastAutoTable.finalY + 6;
 
-          .ppmp-topline { display:flex; justify-content:center; align-items:center; gap:36px; border:1px solid #000; border-top:none; padding:5px; font-size:10px; font-weight:600; }
-          .checkbox { display:inline-flex; align-items:center; gap:4px; }
-          .checkbox .box { display:inline-block; width:10px; height:10px; border:1px solid #000; text-align:center; line-height:10px; font-size:8px; font-weight:700; }
+      // ----- Signature blocks -----
+      const sigBlockH = 34;
+      if (y + sigBlockH > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      const sigColW = contentWidth / 2;
 
-          .plan-meta { border:1px solid #000; border-top:none; padding:5px 8px; font-size:9.5px; }
-          .plan-meta div { margin:2px 0; font-weight:600; }
+      function drawSignature(x, label, name, designation, roleCaption) {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(label, x, y);
+        doc.line(x, y + 12, x + sigColW - 10, y + 12);
+        doc.setFont("helvetica", "bold");
+        doc.text(name || "", x, y + 16);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8);
+        doc.text("Signature over Printed Name", x, y + 20);
+        doc.text(designation || "Position/Designation", x, y + 24);
+        doc.setFont("helvetica", "italic");
+        doc.text(roleCaption, x, y + 28);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.text("Date: ___________________", x, y + 33);
+      }
 
-          .ppmp-table { border:1px solid #000; border-top:none; table-layout:fixed; }
-          .ppmp-table th, .ppmp-table td { border:1px solid #000; padding:3px 4px; font-size:7.2px; text-align:center; vertical-align:middle; word-wrap:break-word; }
-          .ppmp-table thead th { font-weight:700; }
-          .ppmp-table td.text-col { text-align:left; }
-          .ppmp-table td.num-col { text-align:right; }
-          .ppmp-table tr { break-inside:avoid; }
-          .total-row td { font-weight:700; text-align:right; }
+      drawSignature(
+        margin,
+        "Prepared by:",
+        unitName,
+        unitDesignationVal,
+        "[End-User or Implementing Unit]",
+      );
+      drawSignature(
+        margin + sigColW,
+        "Approved by:",
+        headUnitVal,
+        headDesignationVal,
+        "[Head of the End-User or Implementing Unit]",
+      );
 
-          .sign-table { margin-top:12px; }
-          .sign-table td { border:none; vertical-align:top; padding:2px 10px; width:50%; font-size:9px; }
-          .sign-line { border-bottom:1px solid #000; height:34px; }
-          .sign-name { font-weight:700; margin-top:2px; }
-          .sign-caption { font-size:8px; color:#333; }
-          .sign-caption em { font-style:italic; }
-          .sign-date { font-size:8.5px; margin-top:8px; }
+      y += sigBlockH + 4;
 
-          .footer-table { margin-top:14px; }
-          .footer-table td { border:1px solid #000; padding:4px 8px; font-size:8px; }
-          .footer-table .flabel { width:120px; font-weight:600; }
+      // ----- Footer table -----
+      const footerRowH = 6;
+      if (y + footerRowH * 2 > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.setFontSize(8);
+      doc.rect(margin, y, 40, footerRowH);
+      doc.rect(margin + 40, y, contentWidth - 40, footerRowH);
+      doc.setFont("helvetica", "bold");
+      doc.text("Transaction ID", margin + 2, y + 4);
+      doc.setFont("helvetica", "normal");
+      doc.text(transactionId, margin + 42, y + 4);
+      y += footerRowH;
+      doc.rect(margin, y, 40, footerRowH);
+      doc.rect(margin + 40, y, contentWidth - 40, footerRowH);
+      doc.setFont("helvetica", "bold");
+      doc.text("Signature", margin + 2, y + 4);
 
-          @page { size: A4 landscape; margin: 8mm; }
-        </style>
-        </head><body>
-          <table class="header-table">
-            <tr>
-              <td class="logo-cell" rowspan="4"><img src="${logoUrl}" width="56" height="56" alt="TUP Logo" /></td>
-              <td class="org-cell" rowspan="4">
-                <div class="org-name">TECHNOLOGICAL UNIVERSITY OF THE PHILIPPINES</div>
-                <div class="org-address">Ayala Blvd., Ermita, Manila, 1000, Philippines | Tel No. +632-5301-3001 local 132</div>
-                <div class="org-address">Fax No. +632-8521-4063 | Email: procurement@tup.edu.ph | Website: www.tup.edu.ph</div>
-              </td>
-              <td class="meta-label">Index No.</td>
-              <td class="meta-value">TUPM-F-PRO-20-PMP</td>
-            </tr>
-            <tr><td class="meta-label">Revision No.</td><td class="meta-value">02</td></tr>
-            <tr><td class="meta-label">Date</td><td class="meta-value">07/13/2026</td></tr>
-            <tr><td class="meta-label">Page</td><td class="meta-value">1/1</td></tr>
-          </table>
+      const safeUnit = (unitName || "PPMP").replace(/[^a-z0-9]+/gi, "_");
+      const filename = `PPMP_${safeUnit}_${fiscalYearVal || ""}`
+        .replace(/_+/g, "_")
+        .replace(/_$/, "");
+      doc.save(`${filename}.pdf`);
 
-          <div class="title-bar">PROJECT PROCUREMENT MANAGEMENT PLAN (PPMP)</div>
-
-          <div class="ppmp-topline">
-            <span>PPMP NO. ${ppmpNoVal || "___________________"}</span>
-            <span class="checkbox"><span class="box">${planType === "Indicative" ? "X" : ""}</span> INDICATIVE</span>
-            <span class="checkbox"><span class="box">${planType === "Final" ? "X" : ""}</span> FINAL</span>
-          </div>
-
-          <div class="plan-meta">
-            <div>Fiscal Year: ${fiscalYearVal}</div>
-            <div>End-User or Implementing Unit: ${unitName}</div>
-          </div>
-
-          <table class="ppmp-table">
-            <colgroup>
-              <col style="width:19%" /><col style="width:7%" /><col style="width:9%" />
-              <col style="width:9%" /><col style="width:5%" /><col style="width:5%" />
-              <col style="width:5%" /><col style="width:6%" /><col style="width:8%" />
-              <col style="width:8%" /><col style="width:11%" /><col style="width:8%" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th colspan="5">PROCUREMENT PROJECT DETAILS</th>
-                <th colspan="3">PROJECTED TIMELINE (MM/DD/YYYY)</th>
-                <th colspan="2">FUNDING DETAILS</th>
-                <th rowspan="2">ATTACHED SUPPORTING DOCUMENTS</th>
-                <th rowspan="2">REMARKS</th>
-              </tr>
-              <tr>
-                <th>General Description and Objective of the Project to be Procured</th>
-                <th>Type of the Project to be Procured (whether Goods, Infrastructure and Consulting Services)</th>
-                <th>Quantity and Size of the Project to be Procured</th>
-                <th>Recommended Mode of Procurement</th>
-                <th>Pre-Procurement Conference, if applicable (Yes/No)</th>
-                <th>Start of Procurement Activity</th>
-                <th>End of Procurement Activity</th>
-                <th>Expected Delivery/ Implementation Period</th>
-                <th>Source of Funds</th>
-                <th>Estimated Budget / Authorized Budgetary Allocation (PhP)</th>
-              </tr>
-              <tr>
-                <th>Column 1</th><th>Column 2</th><th>Column 3</th><th>Column 4</th><th>Column 5</th>
-                <th>Column 6</th><th>Column 7</th><th>Column 8</th><th>Column 9</th><th>Column 10</th>
-                <th>Column 11</th><th>Column 12</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHTML}
-              <tr class="total-row">
-                <td colspan="9">TOTAL BUDGET:</td>
-                <td class="num-col">${formatCurrencyDisplay(total)}</td>
-                <td colspan="2"></td>
-              </tr>
-            </tbody>
-          </table>
-
-          <table class="sign-table">
-            <tr>
-              <td>
-                Prepared by:
-                <div class="sign-line"></div>
-                <div class="sign-name">${unitName || "&nbsp;"}</div>
-                <div class="sign-caption">Signature over Printed Name</div>
-                <div class="sign-caption">${unitDesignationVal || "Position/Designation"}</div>
-                <div class="sign-caption"><em>[End-User or Implementing Unit]</em></div>
-                <div class="sign-date">Date: ___________________</div>
-              </td>
-              <td>
-                Approved by:
-                <div class="sign-line"></div>
-                <div class="sign-name">${headUnitVal || "&nbsp;"}</div>
-                <div class="sign-caption">Signature over Printed Name</div>
-                <div class="sign-caption">${headDesignationVal || "Position/Designation"}</div>
-                <div class="sign-caption"><em>[Head of the End-User or Implementing Unit]</em></div>
-                <div class="sign-date">Date: ___________________</div>
-              </td>
-            </tr>
-          </table>
-
-          <table class="footer-table">
-            <tr><td class="flabel">Transaction ID</td><td>${transactionId}</td></tr>
-            <tr><td class="flabel">Signature</td><td>&nbsp;</td></tr>
-          </table>
-        </body></html>`;
-
-    const newWin = window.open("", "_blank");
-    if (!newWin) {
-      showToast("Please allow pop-ups to print the PPMP.", "error");
-      return;
+      showToast("PDF saved.", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Could not generate the PDF. Please try again.", "error");
+    } finally {
+      printBtn.disabled = false;
+      printBtn.textContent = originalLabel;
     }
-    newWin.document.write(printDoc);
-    newWin.document.close();
-    newWin.onload = () => newWin.print();
-    showToast("Preparing print preview...", "info");
   };
 
   // ---------- Visitor counter ----------
