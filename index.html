@@ -16,7 +16,7 @@
     />
     <!-- style.css loads last so our theme overrides (the calendar skin
          below) win cascade ties against the library's CSS. -->
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
     <div
@@ -513,6 +513,31 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-    <script src="script.js"></script>
+
+    <!-- App code: plain (non-module) scripts loaded in dependency order, each
+         attaching itself to the shared `window.PPMP` namespace. Deliberately
+         not ES modules — those fail with a CORS error when index.html is
+         opened directly via file://, which this app supports. See
+         README.md "Project Structure" for what each file is responsible for. -->
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/utils/text.js"></script>
+    <script src="js/utils/currency.js"></script>
+    <script src="js/utils/dates.js"></script>
+    <script src="js/datepicker.js"></script>
+    <script src="js/formOptions.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/confirmModal.js"></script>
+    <script src="js/validation.js"></script>
+    <script src="js/persistence.js"></script>
+    <script src="js/transactionId.js"></script>
+    <script src="js/planInfo.js"></script>
+    <script src="js/projectsTable.js"></script>
+    <script src="js/importExport.js"></script>
+    <script src="js/documentGeneration.js"></script>
+    <script src="js/pdfExport.js"></script>
+    <script src="js/printDocument.js"></script>
+    <script src="js/visitorCounter.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
