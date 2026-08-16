@@ -1,17 +1,66 @@
 :root {
+  /* Brand/semantic colors stay constant across themes on purpose — only
+     the "chrome" below (backgrounds, surfaces, borders, text) adapts. */
   --maroon: #8c1d40;
   --maroon-dark: #6e1631;
   --maroon-light: #a72b52;
-  --text: #262223;
-  --border: #d8d3d4;
-  --bg: #f4f2f3;
   --danger: #c0392b;
   --success: #2e7d32;
   --focus: #1a73e8;
+
+  --bg: #f4f2f3;
+  --surface: #ffffff;
+  --surface-alt: #faf8f8;
+  --surface-hover: #f1e7ea;
+  --surface-active: #ece5e7;
+  --border: #d8d3d4;
+  --input-border: #cccccc;
+  --invalid-bg: #fff6f5;
+  --overlay: rgba(0, 0, 0, 0.5);
+
+  --text: #262223;
+  --text-muted: #767070;
+  --text-faint: #96908f;
+
+  color-scheme: light;
+}
+
+/* Dark theme. Applied via [data-theme] on <html>, which js/theme.js always
+   resolves to an explicit "light" or "dark" — even for the "system"
+   preference — so this stylesheet never needs its own
+   prefers-color-scheme media query. */
+:root[data-theme="dark"] {
+  --bg: #17141a;
+  --surface: #241f24;
+  --surface-alt: #2a242a;
+  --surface-hover: rgba(167, 43, 82, 0.18);
+  --surface-active: #332b31;
+  --border: #3c343a;
+  --input-border: #4a4048;
+  --invalid-bg: rgba(192, 57, 43, 0.16);
+  --overlay: rgba(0, 0, 0, 0.65);
+
+  --text: #ece7e8;
+  --text-muted: #b6adb0;
+  --text-faint: #857b7f;
+
+  color-scheme: dark;
 }
 
 * {
   box-sizing: border-box;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 html {
@@ -76,6 +125,56 @@ h3 {
   overflow-wrap: break-word;
 }
 
+/* Light/Dark/System theme switcher, sitting in the header. Styled as a
+   translucent pill over the maroon gradient rather than pulling from the
+   surface/border tokens, since it lives on brand-colored chrome that
+   doesn't change between themes. */
+.theme-switcher {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  opacity: 0.8;
+  box-shadow: none;
+}
+
+.theme-option .icon {
+  width: 1.05em;
+  height: 1.05em;
+}
+
+.theme-option:hover {
+  background: rgba(255, 255, 255, 0.18);
+  opacity: 1;
+}
+
+.theme-option[aria-pressed="true"] {
+  background: #fff;
+  color: var(--maroon);
+  opacity: 1;
+}
+
+.theme-option:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 /* ---------- Plan info panels ---------- */
 
 .plan-info-section {
@@ -87,7 +186,7 @@ h3 {
 }
 
 .info-panel {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.5rem 1.25rem 1.5rem;
@@ -97,20 +196,28 @@ h3 {
 }
 
 .info-panel > legend {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0 0.5rem;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--maroon-dark);
 }
 
-.info-panel.plan > legend::before {
-  content: "📋";
-  margin-right: 0.45rem;
+.info-panel > legend .icon {
+  width: 1.15em;
+  height: 1.15em;
 }
 
-.info-panel.officials > legend::before {
-  content: "🖋️";
-  margin-right: 0.45rem;
+/* Inline SVG icons (Feather-style line icons). Sized to the current
+   font-size via em units so they scale with whatever text they sit
+   beside, and colored via currentColor so they pick up the surrounding
+   text color automatically (maroon on legends, white on filled buttons). */
+.icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
 }
 
 .info-grid {
@@ -213,7 +320,7 @@ h3 {
 
 .form-section,
 .table-display {
-  background: #fff;
+  background: var(--surface);
   margin: 1.25rem;
   padding: 1.25rem;
   border-radius: 10px;
@@ -238,13 +345,13 @@ h3 {
 }
 
 .checkbox-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.2rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
   padding: 0.6rem 0.75rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
-  background: #fff;
+  background: var(--surface);
 }
 
 .checkbox-item {
@@ -295,8 +402,86 @@ h3 {
 }
 
 .others-row input[type="text"]:disabled {
-  background: #f4f2f3;
-  color: #999;
+  background: var(--bg);
+  color: var(--text-faint);
+}
+
+/* .checkbox-grid sets display:grid, which — at equal CSS specificity —
+   beats the browser's default [hidden]{display:none} rule since author
+   styles always win over user-agent styles. Without this, a hidden
+   checkbox-grid stays visible. */
+.checkbox-grid[hidden] {
+  display: none;
+}
+
+.docs-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Holds the active type-specific checklist card side by side with the
+   "funded by another agency" card. Only one .docs-card among the three
+   type cards is ever unhidden at a time, so this always resolves to
+   exactly two visible columns. */
+.docs-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.docs-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.6rem;
+  background: var(--surface);
+}
+
+.docs-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--maroon);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.docs-conditional {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+
+.docs-conditional-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.docs-card-highlight {
+  border-color: var(--maroon-light);
+  background: rgba(140, 29, 64, 0.04);
+}
+
+[data-theme="dark"] .docs-card-highlight {
+  background: rgba(167, 43, 82, 0.12);
+}
+
+/* Smaller type than the regular checklist cards, so this card's extra
+   long document names don't push it taller than the card beside it in
+   .docs-row. */
+.docs-card-highlight .checkbox-item {
+  font-size: 0.72rem;
+  gap: 0.3rem;
+  min-height: 1.15rem;
+}
+
+.docs-card-highlight .checkbox-grid {
+  gap: 0.3rem;
+  padding: 0.45rem 0.6rem;
 }
 
 .field label {
@@ -308,7 +493,7 @@ h3 {
 .info-grid .field-label {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #767070;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -318,12 +503,13 @@ select {
   width: 100%;
   max-width: 100%;
   padding: 0.6rem 0.65rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--input-border);
   border-radius: 6px;
   font-family: inherit;
   font-size: 1rem;
   min-height: 2.75rem;
-  background: #fff;
+  background: var(--surface);
+  color: var(--text);
 }
 
 input:focus,
@@ -336,7 +522,7 @@ select:focus {
 input.invalid,
 select.invalid {
   border-color: var(--danger);
-  background: #fff6f5;
+  background: var(--invalid-bg);
 }
 
 input.invalid:focus,
@@ -352,6 +538,10 @@ select.invalid:focus {
 }
 
 button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
   background: var(--maroon);
   color: #fff;
   border: none;
@@ -389,7 +579,7 @@ button:focus-visible {
 .import-hint {
   margin: 0.4rem 0 0;
   font-size: 0.8rem;
-  color: #767070;
+  color: var(--text-muted);
 }
 
 /* ---------- Table ---------- */
@@ -431,42 +621,67 @@ td.budget-cell {
 }
 
 tbody tr:nth-child(even) {
-  background: #faf8f8;
+  background: var(--surface-alt);
 }
 
 tbody tr:hover {
-  background: #f1e7ea;
+  background: var(--surface-hover);
 }
 
 .empty-row td {
   padding: 1.5rem;
-  color: #888;
+  color: var(--text-faint);
   font-style: italic;
 }
 
 /* Edit and Delete buttons inside the project table */
+.row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
 #ppmpTable button {
+  width: 5.75rem;
   font-size: 0.85rem;
-  padding: 0.35rem 0.6rem;
-  margin: 0.15rem;
-  border-radius: 4px;
+  padding: 0.4rem 0.5rem;
+  margin: 0;
+  border-radius: 6px;
   min-height: 2.2rem;
+  gap: 0.3rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition:
+    background 0.2s,
+    box-shadow 0.2s,
+    transform 0.15s;
+}
+
+#ppmpTable button:hover {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+#ppmpTable button:active {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  transform: translateY(0);
 }
 
 #ppmpTable button.edit-btn {
-  background-color: #3498db;
+  background-color: #2c7bc9;
   color: white;
 }
 #ppmpTable button.edit-btn:hover {
-  background-color: #2980b9;
+  background-color: #2566a8;
 }
 
 #ppmpTable button.delete-btn {
-  background-color: #e74c3c;
+  background-color: var(--danger);
   color: white;
 }
 #ppmpTable button.delete-btn:hover {
-  background-color: #c0392b;
+  background-color: #9f3223;
 }
 
 .total-container {
@@ -503,19 +718,19 @@ tbody tr:hover {
 .signature-designation {
   margin: 0.1rem 0 0.6rem;
   font-size: 0.9rem;
-  color: #555;
+  color: var(--text-muted);
 }
 
 .signature-date {
   font-size: 0.85rem;
-  color: #555;
+  color: var(--text-muted);
 }
 
 footer {
   text-align: right;
   font-size: 0.8rem;
   margin: 1.25rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .site-footer {
@@ -543,12 +758,12 @@ footer {
 
 .footer-office {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .footer-credit {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-muted);
   margin-top: 0.3rem !important;
 }
 
@@ -561,7 +776,7 @@ footer {
   align-items: center;
   gap: 0.5rem;
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .visitor-count {
@@ -643,7 +858,7 @@ footer {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -657,7 +872,7 @@ footer {
 }
 
 .modal-box {
-  background: #fff;
+  background: var(--surface);
   color: var(--text);
   border-radius: 10px;
   padding: 1.5rem;
@@ -741,9 +956,13 @@ footer {
   --adp-width: 300px;
   --adp-z-index: 1200;
   --adp-border-radius: 14px;
+  --adp-background-color: var(--surface);
+  --adp-color: var(--text);
+  --adp-color-secondary: var(--text-muted);
   --adp-border-color: var(--border);
+  --adp-border-color-inner: var(--border);
   --adp-background-color-hover: var(--bg);
-  --adp-background-color-active: #ece5e7;
+  --adp-background-color-active: var(--surface-active);
   --adp-day-name-color: var(--maroon);
   --adp-day-name-color-hover: var(--maroon-dark);
   --adp-color-current-date: var(--maroon);
@@ -756,11 +975,11 @@ footer {
   --adp-cell-border-radius: 8px;
   --adp-day-cell-height: 38px;
   --adp-nav-arrow-color: var(--maroon);
-  --adp-nav-color-secondary: #9c9c9c;
+  --adp-nav-color-secondary: var(--text-faint);
   --adp-btn-color: var(--maroon);
   --adp-btn-color-hover: var(--maroon-dark);
   --adp-btn-background-color-hover: var(--bg);
-  --adp-btn-background-color-active: #ece5e7;
+  --adp-btn-background-color-active: var(--surface-active);
   --adp-mobile-width: 320px;
   --adp-mobile-day-cell-height: 42px;
   box-shadow:
@@ -810,7 +1029,8 @@ footer {
   .plan-info-section,
   .form-section,
   .button-group,
-  .site-footer {
+  .site-footer,
+  .theme-switcher {
     display: none;
   }
   .header {
@@ -846,6 +1066,9 @@ footer {
   .form-grid > .field {
     flex: 1 1 100%;
   }
+  .docs-row {
+    grid-template-columns: 1fr;
+  }
   button {
     width: 100%;
     margin: 0.3rem 0;
@@ -857,9 +1080,6 @@ footer {
   .table-display {
     margin: 0.65rem;
     padding: 1rem;
-  }
-  .checkbox-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
   .signature-container {
     margin: 1.5rem 0.65rem;

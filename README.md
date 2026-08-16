@@ -8,6 +8,7 @@ For step-by-step instructions aimed at end users (not developers), see the **[Us
 
 - **Plan Information & Approving Official** — capture fiscal year, implementing unit, plan type (Indicative/Final), PPMP number, and the approving official's name/designation.
 - **Procurement Project Entries** — add projects with description, procurement type, quantity, mode of procurement, pre-procurement conference, start/end/implementation dates, source of funds, estimated budget, supporting documents, and remarks.
+- **Supporting Documents checklist** — a separate checklist card per Procurement Type (Goods & Services, Consultancy, Infrastructure), plus two checklists that appear automatically when relevant: **Certificate of Exclusivity** (Goods + "Direct Contracting" mode) and the extra documents required when a project is **funded by another agency**. The lists are data-driven from `data/form-options.json` — see [Editing dropdown & checklist options](#editing-dropdown--checklist-options) below.
 - **Form Validation** — required-field and format checks (valid fiscal year, budget, date order) with inline error messages.
 - **Autosave** — plan data is saved to the browser's `localStorage` so it persists across page reloads.
 - **Import** — bulk-load projects from CSV, TSV, or a previously exported Excel file.
@@ -15,6 +16,7 @@ For step-by-step instructions aimed at end users (not developers), see the **[Us
 - **Save as PDF** — generate and download a signed, letterhead-formatted PDF of the PPMP, built directly with a PDF library (no print dialog involved).
 - **Print** — open a print-ready version in a new tab and hand off to the browser's print dialog / the device's printer.
 - **Visitor counter** — a lifetime visit count in the footer, backed by a self-hosted Supabase counter with a local-storage fallback.
+- **Light / Dark / System theme** — a switcher in the header remembers your choice in `localStorage` and, on "System", follows the OS setting live (including if it changes while the page is open). Applied before first paint, so there's no flash of the wrong theme.
 
 ## Tech Stack
 
@@ -26,6 +28,8 @@ For step-by-step instructions aimed at end users (not developers), see the **[Us
 - Google Fonts (Poppins).
 
 All of the above are loaded from CDNs in `index.html` — there is nothing to `npm install`.
+
+**Browser support:** any modern evergreen browser (Chrome, Edge, Firefox, Safari). The app relies on CSS Grid/Flexbox, `fetch`, and ES2015+ syntax; Internet Explorer is not supported.
 
 ## Project Structure
 
@@ -68,6 +72,15 @@ All of the above are loaded from CDNs in `index.html` — there is nothing to `n
 
 Each `js/*.js` file attaches its public functions to a single shared `window.PPMP` namespace (e.g. `window.PPMP.validation.validateHeaderForm`) instead of using `import`/`export`. This is deliberate: browsers refuse to load `type="module"` scripts over the `file://` protocol (a CORS restriction), which would break directly double-clicking `index.html` — something this app explicitly supports. Plain `<script>` tags don't have that restriction, so the app stays fully buildless while still being split into focused, single-responsibility files.
 
+### Editing dropdown & checklist options
+
+`data/form-options.json` drives two parts of the form with no code changes required:
+
+- `headDesignations` — the options in the Approving Official's **Designation** dropdown.
+- `supportingDocuments` — the Supporting Documents checklist, grouped by key: `Goods`, `Consultancy`, `Infrastructure`, `exclusiveDealer` (Certificate of Exclusivity, shown for Goods + Direct Contracting), and `otherAgencyFunding` (shown when a project is funded by another agency).
+
+To add, remove, or reword an entry, edit its array in that file and refresh the page — `js/formOptions.js` fetches it on startup (`loadFormOptions()`) and silently falls back to the defaults baked into `index.html` if the file can't be loaded (e.g. a stricter local setup where `fetch` can't read local files).
+
 ### Adding a new feature
 
 1. Create `js/yourFeature.js` that assigns its functions to `window.PPMP.yourFeature = (function () { ... return {...}; })();`.
@@ -82,8 +95,8 @@ This is a static site — no installation or build step is needed.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/<your-username>/tupngpappmp.git
-   cd tupngpappmp
+   git clone https://github.com/JstMadz/PPMP_NGPA_v3.git
+   cd PPMP_NGPA_v3
    ```
 2. Open `index.html` directly in a browser, or serve it locally, e.g.:
    ```bash

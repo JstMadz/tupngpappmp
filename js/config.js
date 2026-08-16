@@ -5,6 +5,11 @@ window.PPMP = window.PPMP || {};
 window.PPMP.config = (function () {
   const STORAGE_KEY = "ppmp_ngpa_v3_state";
 
+  // Must match the literal string in the inline bootstrap script at the top
+  // of index.html's <head> — that script runs before this file loads, so it
+  // can't reference this constant, only duplicate its value.
+  const THEME_STORAGE_KEY = "ppmp_theme_preference";
+
   const HEADER_FIELD_IDS = [
     "fiscalYear",
     "unit",
@@ -40,6 +45,7 @@ window.PPMP.config = (function () {
 
   return {
     STORAGE_KEY,
+    THEME_STORAGE_KEY,
     HEADER_FIELD_IDS,
     UPPERCASE_FIELD_IDS,
     nextYear,

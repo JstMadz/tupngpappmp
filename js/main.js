@@ -6,6 +6,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const {
     config,
+    theme,
     datepicker,
     formOptions,
     confirmModal,
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     visitorCounter,
   } = window.PPMP;
 
+  theme.init();
   datepicker.init();
   formOptions.init();
   confirmModal.init();
