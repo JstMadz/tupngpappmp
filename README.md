@@ -1,8 +1,42 @@
+<div align="center">
+
+<img src="assets/tup_logo.png" alt="TUP Logo" width="96" />
+
 # PPMP Web App
 
-A browser-based tool for creating and managing a **Project Procurement Management Plan (PPMP)** for the Technological University of the Philippines – Manila. It runs entirely client-side (no backend/server required) and lets a unit fill out plan details, add procurement projects, and export, save, or print a formatted PPMP document that follows the official **TUPM-F-PRO-20-PMP** template.
+A browser-based tool for creating and managing a **Project Procurement Management Plan (PPMP)** for the Technological University of the Philippines – Manila.
 
-For step-by-step instructions aimed at end users (not developers), see the **[User Manual](docs/USER_MANUAL.md)**.
+[![Made with](https://img.shields.io/badge/made%20with-HTML%2FCSS%2FJS-e34c26?logo=html5&logoColor=white)](#tech-stack)
+[![No build step](https://img.shields.io/badge/build%20step-none-success)](#tech-stack)
+[![License](https://img.shields.io/badge/license-unlicensed-lightgrey)](#license)
+
+[Features](#features) •
+[Tech Stack](#tech-stack) •
+[Project Structure](#project-structure) •
+[Getting Started](#getting-started) •
+[Usage](#usage) •
+[User Manual](docs/USER_MANUAL.md)
+
+</div>
+
+---
+
+It runs entirely client-side (no backend/server required) and lets a unit fill out plan details, add procurement projects, and export, save, or print a formatted PPMP document that follows the official **TUPM-F-PRO-20-PMP** template.
+
+> For step-by-step instructions aimed at end users (not developers), see the **[User Manual](docs/USER_MANUAL.md)**.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+  - [Why plain scripts instead of ES modules or a bundler](#why-plain-scripts-instead-of-es-modules-or-a-bundler)
+  - [Editing dropdown & checklist options](#editing-dropdown--checklist-options)
+  - [Adding a new feature](#adding-a-new-feature)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+  - [Import format](#import-format)
+- [License](#license)
 
 ## Features
 
@@ -29,11 +63,11 @@ For step-by-step instructions aimed at end users (not developers), see the **[Us
 
 All of the above are loaded from CDNs in `index.html` — there is nothing to `npm install`.
 
-**Browser support:** any modern evergreen browser (Chrome, Edge, Firefox, Safari). The app relies on CSS Grid/Flexbox, `fetch`, and ES2015+ syntax; Internet Explorer is not supported.
+> **Browser support:** any modern evergreen browser (Chrome, Edge, Firefox, Safari). The app relies on CSS Grid/Flexbox, `fetch`, and ES2015+ syntax; Internet Explorer is not supported.
 
 ## Project Structure
 
-```
+```text
 .
 ├── index.html                    # App markup + script/stylesheet loading order
 ├── css/
@@ -116,3 +150,13 @@ See the **[User Manual](docs/USER_MANUAL.md)** for detailed, screenshot-free wal
 ### Import format
 
 Imported files should include the columns: Description, Quantity, Budget, and Start/End/Implementation dates (`MM/DD/YYYY`). If present, Fiscal Year, End-User/Implementing Unit, Office, Designation, Plan Type, and Head of Implementing Unit/Sector & Designation columns will also be applied to the plan header.
+
+## License
+
+No license has been declared for this repository yet — all rights are reserved by default. Add a `LICENSE` file to open-source it.
+
+<div align="right">
+
+[Back to top ↑](#ppmp-web-app)
+
+</div>
